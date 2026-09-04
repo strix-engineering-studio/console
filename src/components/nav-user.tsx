@@ -42,6 +42,8 @@ export function NavUser() {
 
   if (!user) return null;
 
+  const displayName = user.displayName ?? user.fullName ?? "Profile";
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -49,18 +51,18 @@ export function NavUser() {
           <DropdownMenuTrigger>
             <SidebarMenuButton
               size="lg"
-              tooltip={user.displayName ?? "Profile"}
+              tooltip={displayName}
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                {/* <AvatarImage src={user.d ?? undefined} alt={user.displayName ?? ''} /> */}
+                {/* <AvatarImage src={user.d ?? undefined} alt={displayName ?? ''} /> */}
                 <AvatarFallback className="rounded-lg">
-                  {getInitials(user.displayName)}
+                  {getInitials(displayName)}
                 </AvatarFallback>
               </Avatar>
 
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.displayName}</span>
+                <span className="truncate font-medium">{displayName}</span>
               </div>
 
               <ChevronsUpDownIcon className="ml-auto size-4" />
@@ -76,16 +78,14 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-2 py-2">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  {/* <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName ?? ''} /> */}
+                  {/* <AvatarImage src={user.photoURL ?? undefined} alt={displayName ?? ''} /> */}
                   <AvatarFallback className="rounded-lg">
-                    {getInitials(user.displayName)}
+                    {getInitials(displayName)}
                   </AvatarFallback>
                 </Avatar>
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {user.displayName}
-                  </span>
+                  <span className="truncate font-medium">{displayName}</span>
                 </div>
               </div>
 

@@ -126,17 +126,19 @@ function ThemeToggle() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-foreground size-8"
-          aria-label="Change appearance"
-        >
-          <SunIcon className="size-4 scale-100 rotate-0 transition-transform dark:scale-0 dark:-rotate-90" />
-          <MoonIcon className="absolute size-4 scale-0 rotate-90 transition-transform dark:scale-100 dark:rotate-0" />
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground size-8"
+            aria-label="Change appearance"
+          >
+            <SunIcon className="size-4 scale-100 rotate-0 transition-transform dark:scale-0 dark:-rotate-90" />
+            <MoonIcon className="absolute size-4 scale-0 rotate-90 transition-transform dark:scale-100 dark:rotate-0" />
+          </Button>
+        }
+      />
 
       <DropdownMenuContent align="end" className="w-36">
         <DropdownMenuLabel className="text-muted-foreground text-xs font-medium">
@@ -195,37 +197,39 @@ function SignalsButton() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-foreground relative size-8"
-          aria-label="View signals"
-        >
-          <BellIcon className="size-4" />
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground relative size-8"
+            aria-label="View signals"
+          >
+            <BellIcon className="size-4" />
 
-          {unread > 0 && (
-            <span
-              className="
-                bg-foreground
-                text-background
-                absolute
-                -right-0.5
-                -top-0.5
-                flex
-                size-4
-                items-center
-                justify-center
-                rounded-full
-                text-[9px]
-                font-semibold
-              "
-            >
-              {unread > 9 ? "9+" : unread}
-            </span>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
+            {unread > 0 && (
+              <span
+                className="
+                  bg-foreground
+                  text-background
+                  absolute
+                  -right-0.5
+                  -top-0.5
+                  flex
+                  size-4
+                  items-center
+                  justify-center
+                  rounded-full
+                  text-[9px]
+                  font-semibold
+                "
+              >
+                {unread > 9 ? "9+" : unread}
+              </span>
+            )}
+          </Button>
+        }
+      />
 
       <DropdownMenuContent align="end" className="w-80">
         <DropdownMenuLabel className="flex items-center justify-between py-2">
@@ -239,50 +243,55 @@ function SignalsButton() {
         <DropdownMenuSeparator />
 
         {signals.map((signal) => (
-          <DropdownMenuItem key={`${signal.company}-${signal.title}`} asChild>
-            <Link
-              to="/signals"
-              className="
-                flex
-                cursor-pointer
-                flex-col
-                items-start
-                gap-0.5
-                py-2.5
-              "
-            >
-              <div className="flex w-full items-center gap-2">
-                <span
-                  className={cn("size-1.5 shrink-0 rounded-full", signal.dot)}
-                  aria-hidden="true"
-                />
+          <DropdownMenuItem
+            key={`${signal.company}-${signal.title}`}
+            render={
+              <Link
+                to="/signals"
+                className="
+                  flex
+                  cursor-pointer
+                  flex-col
+                  items-start
+                  gap-0.5
+                  py-2.5
+                "
+              >
+                <div className="flex w-full items-center gap-2">
+                  <span
+                    className={cn("size-1.5 shrink-0 rounded-full", signal.dot)}
+                    aria-hidden="true"
+                  />
 
-                <span className="flex-1 text-sm font-medium">
-                  {signal.title}
-                </span>
+                  <span className="flex-1 text-sm font-medium">
+                    {signal.title}
+                  </span>
 
-                <span className="text-muted-foreground shrink-0 text-xs">
-                  {signal.time}
-                </span>
-              </div>
+                  <span className="text-muted-foreground shrink-0 text-xs">
+                    {signal.time}
+                  </span>
+                </div>
 
-              <p className="text-muted-foreground pl-3.5 text-xs">
-                {signal.company}
-              </p>
-            </Link>
-          </DropdownMenuItem>
+                <p className="text-muted-foreground pl-3.5 text-xs">
+                  {signal.company}
+                </p>
+              </Link>
+            }
+          />
         ))}
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link
-            to="/signals"
-            className="text-muted-foreground hover:text-foreground w-full justify-center text-xs"
-          >
-            View all signals
-          </Link>
-        </DropdownMenuItem>
+        <DropdownMenuItem
+          render={
+            <Link
+              to="/signals"
+              className="text-muted-foreground hover:text-foreground w-full justify-center text-xs"
+            >
+              View all signals
+            </Link>
+          }
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -298,19 +307,21 @@ function UserQuickMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="h-8 gap-2 px-2"
-          aria-label="Open account menu"
-        >
-          <Avatar className="size-7 rounded-md">
-            <AvatarFallback className="rounded-md text-[10px] font-semibold">
-              {getInitials(user.fullName)}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            className="h-8 gap-2 px-2"
+            aria-label="Open account menu"
+          >
+            <Avatar className="size-7 rounded-md">
+              <AvatarFallback className="rounded-md text-[10px] font-semibold">
+                {getInitials(user.fullName)}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        }
+      />
 
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
@@ -323,30 +334,37 @@ function UserQuickMenu() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link to="/settings">
-            <Settings2Icon className="mr-2 size-4" />
-            Settings
-          </Link>
-        </DropdownMenuItem>
+        <DropdownMenuItem
+          render={
+            <Link to="/settings" className="flex items-center gap-2">
+              <Settings2Icon className="mr-2 size-4" />
+              Settings
+            </Link>
+          }
+        />
 
-        <DropdownMenuItem asChild>
-          <Link to="/help">
-            <HelpCircleIcon className="mr-2 size-4" />
-            Help & Support
-          </Link>
-        </DropdownMenuItem>
+        <DropdownMenuItem
+          render={
+            <Link to="/help" className="flex items-center gap-2">
+              <HelpCircleIcon className="mr-2 size-4" />
+              Help & Support
+            </Link>
+          }
+        />
 
-        <DropdownMenuItem asChild>
-          <a
-            href="https://strix.website"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <ExternalLinkIcon className="mr-2 size-4" />
-            Strix Website
-          </a>
-        </DropdownMenuItem>
+        <DropdownMenuItem
+          render={
+            <a
+              href="https://strix.website"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <ExternalLinkIcon className="mr-2 size-4" />
+              Strix Website
+            </a>
+          }
+        />
 
         <DropdownMenuSeparator />
 
@@ -408,14 +426,16 @@ export function SiteHeader() {
                         {crumb.label}
                       </BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink asChild>
-                        <Link
-                          to={crumb.href}
-                          className="text-muted-foreground hover:text-foreground text-sm"
-                        >
-                          {crumb.label}
-                        </Link>
-                      </BreadcrumbLink>
+                      <BreadcrumbLink
+                        render={
+                          <Link
+                            to={crumb.href}
+                            className="text-muted-foreground hover:text-foreground text-sm"
+                          >
+                            {crumb.label}
+                          </Link>
+                        }
+                      />
                     )}
                   </BreadcrumbItem>
                 </Fragment>

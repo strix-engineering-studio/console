@@ -9,15 +9,21 @@ import type { IAdminUser } from '../types';
 export const useAdminUsersQuery = () => {
   return useQuery<IAdminUser[]>({
     queryKey: [QUERY_KEYS.ADMIN_USERS],
-    queryFn: adminUsersService.fetchAdminUsers,
+    queryFn: async () => {
+      const response = await adminUsersService.fetchAdminUsers();
+      return response.data ?? [];
+    },
   });
 };
 
 
 export const useAdminUserQuery = (id: string) => {
-  return useQuery<IAdminUser>({
+  return useQuery<IAdminUser | null>({
     queryKey: [QUERY_KEYS.ADMIN_USERS, id],
-    queryFn: () => adminUsersService.fetchAdminUser(id),
+    queryFn: async () => {
+      const response = await adminUsersService.fetchAdminUser(id);
+      return response.data ?? null;
+    },
     enabled: !!id,
   });
 };
@@ -27,8 +33,15 @@ export const useCreateAdminUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation<IAdminUser, Error, AdminUserFormData>({
-    mutationFn: (data) =>
-      adminUsersService.createAdminUser(data),
+    mutationFn: async (data) => {
+      const response = await adminUsersService.createAdminUser(data);
+
+      if (!response.data) {
+        throw new Error('Admin user creation returned no data.');
+      }
+
+      return response.data;
+    },
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -56,10 +69,19 @@ export const useUpdateAdminUserMutation = () => {
       data: Partial<AdminUserFormData>;
     }
   >({
-    mutationFn: ({ id, data }) =>
-      adminUsersService.updateAdminUser(id, data),
+    mutationFn: async ({ id, data }) => {
+      const response = await adminUsersService.updateAdminUser(id, data);
+
+      if (!response.data) {
+        throw new Error('Admin user update returned no data.');
+      }
+
+      return response.data;
+    },
 
     onSuccess: (adminUser) => {
+      if (!adminUser) return;
+
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.ADMIN_USERS],
       });
@@ -87,8 +109,9 @@ export const useDeleteAdminUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, string>({
-    mutationFn: (id: string) =>
-      adminUsersService.deleteAdminUser(id),
+    mutationFn: async (id: string) => {
+      await adminUsersService.deleteAdminUser(id);
+    },
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -116,10 +139,19 @@ export const useToggleAdminStatusMutation = () => {
       isActive: boolean;
     }
   >({
-    mutationFn: ({ id, isActive }) =>
-      adminUsersService.updateAdminStatus(id, isActive),
+    mutationFn: async ({ id, isActive }) => {
+      const response = await adminUsersService.updateAdminStatus(id, isActive);
+
+      if (!response.data) {
+        throw new Error('Admin status update returned no data.');
+      }
+
+      return response.data;
+    },
 
     onSuccess: (adminUser) => {
+      if (!adminUser) return;
+
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.ADMIN_USERS],
       });
@@ -132,8 +164,7 @@ export const useToggleAdminStatusMutation = () => {
       });
 
       toast.success(
-        `Admin ${adminUser.isActive ? 'activated' : 'deactivated'
-        } successfully.`
+        `Admin ${adminUser.isActive ? 'activated' : 'deactivated'} successfully.`
       );
     },
 

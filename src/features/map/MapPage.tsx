@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from "react";
-import { Building2, MapPin, Search, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Building2, Search, X } from "lucide-react";
 
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
 
 import { Button } from "@/components/ui/button";

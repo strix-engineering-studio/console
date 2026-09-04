@@ -9,7 +9,6 @@ import {
   Plus,
   Search,
   Sparkles,
-  Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -23,9 +22,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import type { LeadType } from "../types";
 // Replace this with your actual search hook when the API is ready.
 // import { useLeadSearchQuery } from "../hooks/useLeadSearch";
+
+type LeadType = {
+  id: string;
+  companyName: string;
+  domain: string;
+  industry: string;
+  location: string;
+  employeeCount: number;
+  status: "new" | "existing" | "researching";
+  source: string;
+  opportunityScore: number;
+};
 
 type LeadStatus = "new" | "existing" | "researching";
 
@@ -144,15 +154,17 @@ function FilterDropdown({
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="h-10 w-full justify-between rounded-xl px-3 text-sm font-normal"
-          >
-            <span className="truncate">{value}</span>
-            <ChevronDown className="ml-2 size-3.5 shrink-0 text-muted-foreground" />
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="outline"
+              className="h-10 w-full justify-between rounded-xl px-3 text-sm font-normal"
+            >
+              <span className="truncate">{value}</span>
+              <ChevronDown className="ml-2 size-3.5 shrink-0 text-muted-foreground" />
+            </Button>
+          }
+        />
 
         <DropdownMenuContent align="start" className="w-52">
           {options.map((option) => (

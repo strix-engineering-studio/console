@@ -23,7 +23,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import type { LeadType } from "../types";
+type LeadType = {
+  id: string;
+  companyName: string;
+  domain: string;
+  industry: string;
+  location: string;
+  employeeCount: number;
+  status: "new" | "researching" | "qualified" | "contacted";
+  source: string;
+  opportunityScore: number;
+};
 
 type LeadStatus = "new" | "researching" | "qualified" | "contacted";
 
@@ -211,16 +221,18 @@ function FilterDropdown({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-10 min-w-36 justify-between rounded-xl px-3 text-sm font-normal"
-        >
-          <span className="truncate">{value}</span>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="outline"
+            className="h-10 min-w-36 justify-between rounded-xl px-3 text-sm font-normal"
+          >
+            <span className="truncate">{value}</span>
 
-          <ChevronDown className="ml-2 size-3.5 shrink-0 text-muted-foreground" />
-        </Button>
-      </DropdownMenuTrigger>
+            <ChevronDown className="ml-2 size-3.5 shrink-0 text-muted-foreground" />
+          </Button>
+        }
+      />
 
       <DropdownMenuContent align="end" className="w-48">
         {options.map((option) => (
@@ -366,16 +378,18 @@ export const LeadsPage: React.FC = () => {
 
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8 rounded-lg"
-                onClick={(event) => event.stopPropagation()}
-              >
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-lg"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <MoreHorizontal className="size-4" />
+                </Button>
+              }
+            />
 
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => navigate(`/leads/${lead.id}`)}>

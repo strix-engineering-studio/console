@@ -138,7 +138,7 @@ export const UsersPage: React.FC = () => {
       {/* Main Table Card */}
       <DataTable
         columns={columns}
-        data={users?.data ?? []}
+        data={users ?? []}
         searchKey="fullName"
         searchPlaceholder="Search users by name..."
         loading={isLoading}

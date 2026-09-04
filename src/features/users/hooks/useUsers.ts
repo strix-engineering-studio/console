@@ -9,18 +9,24 @@ import type { UserType } from '../types';
 import { COLLECTIONS } from '@/lib/constants/COLLECTIONS';
 
 export const useUsersQuery = () => {
-  return useQuery({
+  return useQuery<UserType[]>({
     queryKey: [COLLECTIONS.USERS],
-    queryFn: () => usersService.fetchUsers(),
+    queryFn: async () => {
+      const response = await usersService.fetchUsers();
+      return response.data ?? [];
+    },
   });
 };
 
 export const useUserQuery = (id: string) => {
   const queryClient = useQueryClient();
 
-  return useQuery({
+  return useQuery<UserType | undefined>({
     queryKey: [COLLECTIONS.USERS, id],
-    queryFn: () => usersService.fetchUserById(id),
+    queryFn: async () => {
+      const response = await usersService.fetchUserById(id);
+      return response.data ?? undefined;
+    },
 
     initialData: () => {
       const users = queryClient.getQueryData<UserType[]>([

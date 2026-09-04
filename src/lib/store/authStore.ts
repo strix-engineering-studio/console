@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import type { UserType } from '@/features/users';
+import type { IAdminUser } from '@/features/admins';
 
 export interface AuthStore {
-  user: UserType | null;
+  user: IAdminUser | null;
   isLoading: boolean;
 
-  setUser: (user: UserType | null) => void;
+  setUser: (user: IAdminUser | null) => void;
   setLoading: (loading: boolean) => void;
 }
 

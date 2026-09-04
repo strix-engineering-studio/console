@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react"
 
-import type { UserType } from "@/features/users"
+import type { IAdminUser } from "@/features/admins"
 
 import { authService } from "@/features/auth/services/authService"
 
@@ -22,7 +22,7 @@ export interface AuthContextType {
   /**
    * Currently authenticated user.
    */
-  user: UserType | null
+  user: IAdminUser | null
 
   /**
    * Whether the user is authenticated.
@@ -41,7 +41,7 @@ export interface AuthContextType {
    * Access token is stored in memory.
    * Refresh token is managed by HttpOnly cookie.
    */
-  login: (username: string, password: string) => Promise<UserType | null>
+  login: (username: string, password: string) => Promise<IAdminUser | null>
 
   /**
    * Logout current user.
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // =====================================================
 
   const login = useCallback(
-    async (username: string, password: string): Promise<UserType | null> => {
+    async (username: string, password: string): Promise<IAdminUser | null> => {
       setLoading(true)
 
       try {
@@ -178,18 +178,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
          */
 
         const response = await authService.login({
-          username,
-          password,
+         username,
+         password,
         })
 
-        // -------------------------------------------------
-        // Access token
-        // -------------------------------------------------
+        const loginPayload = response.data as
+         | ({ access_token?: string; token?: string; accessToken?: string } | null)
+         | undefined
 
-        const accessToken = response.data?.accessToken
+        const accessToken =
+         loginPayload?.access_token ?? loginPayload?.token ?? loginPayload?.accessToken ?? null
 
         if (!accessToken) {
-          throw new Error("Login succeeded but no access token was returned.")
+         throw new Error("Login succeeded but no access token was returned.")
         }
 
         /*
@@ -204,14 +205,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         setAccessToken(accessToken)
 
-        // -------------------------------------------------
-        // User
-        // -------------------------------------------------
-
-        const loggedInUser = response.data?.fullName || null
+        const loggedInUser = response.data ?? null
 
         if (!loggedInUser) {
-          /*
+         /*
            * If your login endpoint does not return the user,
            * you can explicitly call refreshUser() here.
            *
@@ -219,7 +216,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
            * the login endpoint should return the user.
            */
 
-          throw new Error("Login succeeded but no user was returned.")
+         throw new Error("Login succeeded but no user was returned.")
         }
 
         /*
