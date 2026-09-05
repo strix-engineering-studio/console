@@ -1,6 +1,9 @@
+﻿"use client";
+
 import { Fragment } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Link, useLocation } from "react-router-dom";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -59,7 +62,7 @@ const routeLabels: Record<string, string> = {
 };
 
 function useBreadcrumbs() {
-  const { pathname } = useLocation();
+  const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
 
   if (segments.length === 0) {
@@ -247,7 +250,7 @@ function SignalsButton() {
             key={`${signal.company}-${signal.title}`}
             render={
               <Link
-                to="/signals"
+                href="/signals"
                 className="
                   flex
                   cursor-pointer
@@ -285,7 +288,7 @@ function SignalsButton() {
         <DropdownMenuItem
           render={
             <Link
-              to="/signals"
+              href="/signals"
               className="text-muted-foreground hover:text-foreground w-full justify-center text-xs"
             >
               View all signals
@@ -336,7 +339,7 @@ function UserQuickMenu() {
 
         <DropdownMenuItem
           render={
-            <Link to="/settings" className="flex items-center gap-2">
+            <Link href="/settings" className="flex items-center gap-2">
               <Settings2Icon className="mr-2 size-4" />
               Settings
             </Link>
@@ -345,7 +348,7 @@ function UserQuickMenu() {
 
         <DropdownMenuItem
           render={
-            <Link to="/help" className="flex items-center gap-2">
+            <Link href="/help" className="flex items-center gap-2">
               <HelpCircleIcon className="mr-2 size-4" />
               Help & Support
             </Link>
@@ -429,7 +432,7 @@ export function SiteHeader() {
                       <BreadcrumbLink
                         render={
                           <Link
-                            to={crumb.href}
+                            href={crumb.href}
                             className="text-muted-foreground hover:text-foreground text-sm"
                           >
                             {crumb.label}
@@ -488,7 +491,7 @@ export function SiteHeader() {
               font-medium
             "
           >
-            ⌘K
+            âŒ˜K
           </kbd>
         </Button>
 
@@ -504,3 +507,4 @@ export function SiteHeader() {
     </header>
   );
 }
+

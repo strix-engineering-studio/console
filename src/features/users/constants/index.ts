@@ -1,4 +1,4 @@
-// src/features/users/constants/index.ts
+﻿// src/features/users/constants/index.ts
 
 import { COLLECTIONS } from '@/lib/constants/COLLECTIONS';
 
@@ -228,3 +228,4 @@ export default {
   USER_FIELDS,
   USER_FIELD_TYPES,
 };
+

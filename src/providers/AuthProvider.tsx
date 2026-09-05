@@ -1,3 +1,5 @@
+﻿"use client";
+
 import {
   createContext,
   useCallback,
@@ -100,15 +102,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
        * The Axios client should handle:
        *
        *     /me
-       *       ↓
+       *       â†“
        *     401
-       *       ↓
+       *       â†“
        *     /auth-user/refresh
-       *       ↓
+       *       â†“
        *     HttpOnly refresh cookie
-       *       ↓
+       *       â†“
        *     new access token
-       *       ↓
+       *       â†“
        *     retry /me
        *
        * Therefore we only call /me once during the
@@ -300,11 +302,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
        * automatically perform:
        *
        *     401
-       *       ↓
+       *       â†“
        *     /refresh
-       *       ↓
+       *       â†“
        *     new access token
-       *       ↓
+       *       â†“
        *     retry /me
        */
 
@@ -358,3 +360,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
 // =====================================================
 
 export default AuthProvider
+

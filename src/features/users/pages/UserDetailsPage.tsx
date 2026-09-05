@@ -1,4 +1,4 @@
-import { Edit, Phone, Calendar, Crown, Shield, User } from "lucide-react";
+﻿import { Edit, Phone, Calendar, Crown, Shield, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -349,3 +349,4 @@ export function InfoRow({ label, value }: InfoRowProps) {
     </div>
   );
 }
+

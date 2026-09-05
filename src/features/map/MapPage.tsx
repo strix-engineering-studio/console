@@ -1,3 +1,5 @@
+﻿"use client";
+
 import { useMemo, useState } from "react";
 import { Building2, Search, X } from "lucide-react";
 
@@ -6,7 +8,7 @@ import L from "leaflet";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 import "leaflet/dist/leaflet.css";
 
@@ -217,7 +219,7 @@ export default function MapPage() {
           </p>
         </div>
 
-        <Link to="/leads">
+        <Link href="/leads">
           <Button variant="outline" className="rounded-xl">
             <Building2 className="size-4" />
             View leads
@@ -254,7 +256,7 @@ export default function MapPage() {
                   <p className="font-semibold">{lead.companyName}</p>
 
                   <p className="mt-1 text-xs text-gray-500">
-                    {lead.industry} · {lead.location}
+                    {lead.industry} Â· {lead.location}
                   </p>
 
                   <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
@@ -272,7 +274,7 @@ export default function MapPage() {
                   </div>
 
                   <Link
-                    to={`/leads/${lead.id}`}
+                    href={`/leads/${lead.id}`}
                     className="mt-3 block text-xs font-medium underline"
                   >
                     Open lead
@@ -440,7 +442,7 @@ function LeadPanel({ lead, onClose }: { lead: Lead; onClose: () => void }) {
             </h2>
 
             <p className="mt-1 text-xs text-muted-foreground">
-              {lead.industry} · {lead.location}
+              {lead.industry} Â· {lead.location}
             </p>
           </div>
         </div>
@@ -487,11 +489,11 @@ function LeadPanel({ lead, onClose }: { lead: Lead; onClose: () => void }) {
 
       {/* Actions */}
       <div className="mt-5 flex gap-2">
-        <Link to={`/leads/${lead.id}`} className="flex-1">
+        <Link href={`/leads/${lead.id}`} className="flex-1">
           <Button className="w-full rounded-xl">Open Lead</Button>
         </Link>
 
-        <Link to="/research">
+        <Link href="/research">
           <Button variant="outline" className="rounded-xl">
             Research
           </Button>
@@ -510,3 +512,4 @@ function DetailRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+

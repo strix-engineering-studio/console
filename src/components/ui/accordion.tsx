@@ -1,4 +1,4 @@
-import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
+﻿import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 
 import { cn } from "@/lib/utils"
 import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react"
@@ -70,3 +70,4 @@ function AccordionContent({
 }
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+

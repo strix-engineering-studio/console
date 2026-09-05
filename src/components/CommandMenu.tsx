@@ -1,5 +1,7 @@
+﻿"use client";
+
 import { useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import {
   BarChart3Icon,
   BellIcon,
@@ -49,7 +51,7 @@ const navItems = [
 ];
 
 export function CommandMenu() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const { open, openMenu, closeMenu } = useCommandMenuStore();
 
@@ -76,9 +78,9 @@ export function CommandMenu() {
   const handleNavigate = useCallback(
     (href: string) => {
       closeMenu();
-      navigate(href);
+      router.push(href);
     },
-    [navigate, closeMenu],
+    [router, closeMenu],
   );
 
   return (
@@ -137,3 +139,4 @@ export function CommandMenu() {
     </CommandDialog>
   );
 }
+

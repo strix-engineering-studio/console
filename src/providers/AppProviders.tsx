@@ -1,4 +1,6 @@
-import { Children, useState } from "react";
+﻿"use client";
+
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
@@ -14,7 +16,7 @@ export default function AppProviders({ children }: { children: React.ReactNode }
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <AuthProvider>
-            {Children.toArray(children)}
+            {children}
             <Toaster position="top-center" richColors />
           </AuthProvider>
         </TooltipProvider>
@@ -22,3 +24,4 @@ export default function AppProviders({ children }: { children: React.ReactNode }
     </ThemeProvider>
   );
 }
+

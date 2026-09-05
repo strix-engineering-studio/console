@@ -1,0 +1,2175 @@
+===== PROJECT ROOT =====
+ Volume in drive P is New Volume
+ Volume Serial Number is FC06-7E96
+
+ Directory of P:\project\Strix Engineering Studio\strix-console
+
+06-09-2026  01:04    <DIR>          .
+28-08-2026  12:36    <DIR>          ..
+08-08-2026  01:54                48 .env
+06-09-2026  00:58    <DIR>          .git
+04-09-2026  13:25    <DIR>          .github
+23-03-2026  21:42               253 .gitignore
+04-09-2026  13:26                 0 AGENTS.md
+22-08-2026  11:43               515 components.json
+30-07-2026  17:17               591 eslint.config.js
+08-08-2026  02:40               712 index.html
+06-09-2026  01:04                 0 migration-info.txt
+06-09-2026  01:02                 0 next.config.ts
+06-09-2026  01:02    <DIR>          node_modules
+06-09-2026  01:00             2,637 package.json
+06-09-2026  01:00           358,083 pnpm-lock.yaml
+23-08-2026  12:52    <DIR>          public
+30-07-2026  17:17             2,425 README.md
+06-09-2026  01:01    <DIR>          src
+08-08-2026  23:09             1,023 tsconfig.app.json
+19-04-2026  19:34               119 tsconfig.json
+25-07-2026  20:26               558 tsconfig.node.json
+31-07-2026  19:27               457 vite.config.ts
+              15 File(s)        367,421 bytes
+               7 Dir(s)  40,951,570,432 bytes free
+
+===== PACKAGE.JSON =====
+{
+  "name": "console",
+  "private": true,
+  "version": "0.0.1+1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.6.0",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/modifiers": "^9.0.0",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@firebase/auth": "^1.13.3",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@hookform/resolvers": "^5.4.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@radix-ui/react-form": "^0.1.12",
+    "@shadcn/react": "^0.2.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-query": "^5.101.2",
+    "@tanstack/react-table": "^8.21.3",
+    "axios": "^1.19.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^4.4.0",
+    "embla-carousel-react": "^8.6.0",
+    "emoji-picker-react": "^4.19.1",
+    "firebase": "^12.15.0",
+    "firebase-admin": "^14.1.0",
+    "input-otp": "^1.4.2",
+    "install": "^0.13.0",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^1.23.0",
+    "next": "^16.3.4",
+    "next-themes": "^0.4.6",
+    "nextjs-toploader": "^3.9.17",
+    "radix-ui": "^1.6.7",
+    "react": "^19.2.7",
+    "react-day-picker": "^10.0.1",
+    "react-dom": "^19.2.7",
+    "react-helmet-async": "^3.0.0",
+    "react-hook-form": "^7.81.0",
+    "react-resizable-panels": "^4.12.1",
+    "react-router-dom": "^7.18.2",
+    "recharts": "^3.8.0",
+    "shadcn": "^4.19.0",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.6.0",
+    "tw-animate-css": "^1.4.0",
+    "vaul": "^1.1.2",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@eslint/js": "^10.0.1",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@types/babel__core": "^7.20.5",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.4",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "dotenv": "^17.4.2",
+    "dotenv-cli": "^11.0.0",
+    "eslint": "^10.6.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "leaflet": "^1.9.4",
+    "postcss": "^8.5.25",
+    "prettier": "^3.9.5",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "react-leaflet": "^5.0.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.62.0",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.10"
+  }
+}
+===== VITE CONFIG =====
+import { defineConfig } from 'vite'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import babel from '@rolldown/plugin-babel'
+import tailwindcss from "@tailwindcss/vite"
+import path from "path";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+    babel({ presets: [reactCompilerPreset()] })
+  ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+})
+
+===== TYPESCRIPT CONFIG =====
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "es2023",
+    "lib": [
+      "ES2023",
+      "DOM"
+    ],
+    "module": "esnext",
+    "types": [
+      "vite/client"
+    ],
+    "allowArbitraryExtensions": true,
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": false,
+    "noFallthroughCasesInSwitch": true,
+  },
+  "include": [
+    "src",
+    "../frontend/src/lib/store",
+    "../frontend/src/lib/errors.ts",
+    "../frontend/src/lib/utils.ts",
+    "../frontend/src/lib/api",
+    "../frontend/src/lib/auth",
+    "../frontend/src/lib/constants",
+    "../frontend/src/types",
+    "../frontend/src/providers"
+  ]
+}{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "module": "nodenext",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["vite.config.ts"]
+}
+
+===== INDEX.HTML =====
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+      rel="stylesheet"
+    />
+  <title>console</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+===== APP.TSX =====
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+import AppProviders from "@/providers/AppProviders";
+
+function App() {
+  return (
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>
+  );
+}
+
+export default App;
+
+===== MAIN.TSX =====
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+===== ROUTER.TSX =====
+import { createBrowserRouter, Navigate } from "react-router-dom";
+
+// Layouts
+import AdminLayout from "./components/layouts/AdminLayout";
+import AuthLayout from "./components/layouts/AuthLayout";
+
+// Auth
+import LoginPage from "./features/auth/pages/LoginPage";
+
+// Dashboard
+import DashboardPage from "./features/dashboard/pages/DashboardPage";
+
+// Profile
+
+// Users
+import UsersPage from "./features/users/pages/PeoplePage";
+import CreateUserPage from "./features/users/pages/CreateUserPage";
+import EditUserPage from "./features/users/pages/EditUserPage";
+
+// Payments
+import ProfilePage from "./features/users/pages/ProfilePage";
+import { OrganizationsPage } from "./features/organizations";
+import OrganizationDetailsPage from "./features/organizations/pages/OrganizationDetailsPage";
+import OrganizationEditPage from "./features/organizations/pages/OrganizationEditPage";
+import SearchLeadsPage from "./features/search/SearchPage";
+import MapPage from "./features/map/MapPage";
+import LeadsPage from "./features/leads/LeadsPage";
+
+export const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <AuthLayout />,
+    children: [
+      {
+        index: true,
+        element: <LoginPage />,
+      },
+    ],
+  },
+
+  {
+    path: "/",
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <DashboardPage />,
+      },
+
+      {
+        path: "search",
+        element: <SearchLeadsPage />,
+      },
+      {
+        path: "map",
+        element: <MapPage />,
+      },
+      {
+        path: "leads",
+        element: <LeadsPage />,
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
+      },
+
+      {
+        path: "users",
+        children: [
+          {
+            index: true,
+            element: <UsersPage />,
+          },
+          {
+            path: "create",
+            element: <CreateUserPage />,
+          },
+          {
+            path: ":id/edit",
+            element: <EditUserPage />,
+          },
+        ],
+      },
+
+      {
+        path: "organizations",
+        children: [
+          {
+            index: true,
+            element: <OrganizationsPage />,
+          },
+          {
+            path: ":id",
+            element: <OrganizationDetailsPage />,
+          },
+          {
+            path: ":id/edit",
+            element: <OrganizationEditPage />,
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
+  },
+]);
+
+===== APP PROVIDERS =====
+import { Children, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
+
+import { AuthProvider } from "@/providers/AuthProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+export default function AppProviders({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <AuthProvider>
+            {Children.toArray(children)}
+            <Toaster position="top-center" richColors />
+          </AuthProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
+}
+
+===== AUTH PROVIDER =====
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  type ReactNode,
+} from "react"
+
+import type { IAdminUser } from "@/features/admins"
+
+import { authService } from "@/features/auth/services/authService"
+
+import { setAccessToken, clearAccessToken } from "@/lib/api/client"
+
+import { useAuthStore } from "@/lib/store/authStore"
+
+// =====================================================
+// AUTH CONTEXT TYPE
+// =====================================================
+
+export interface AuthContextType {
+  /**
+   * Currently authenticated user.
+   */
+  user: IAdminUser | null
+
+  /**
+   * Whether the user is authenticated.
+   */
+  isAuthenticated: boolean
+
+  /**
+   * Whether authentication state is being initialized
+   * or an authentication operation is in progress.
+   */
+  isLoading: boolean
+
+  /**
+   * Login user.
+   *
+   * Access token is stored in memory.
+   * Refresh token is managed by HttpOnly cookie.
+   */
+  login: (username: string, password: string) => Promise<IAdminUser | null>
+
+  /**
+   * Logout current user.
+   */
+  logout: () => Promise<void>
+
+  /**
+   * Explicitly refresh the current user from backend.
+   *
+   * This does NOT run automatically on every route change.
+   */
+  refreshUser: () => Promise<void>
+}
+
+// =====================================================
+// CONTEXT
+// =====================================================
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+// =====================================================
+// PROVIDER PROPS
+// =====================================================
+
+interface AuthProviderProps {
+  children: ReactNode
+}
+
+// =====================================================
+// AUTH PROVIDER
+// =====================================================
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const { user, isLoading, setUser, setLoading } = useAuthStore()
+
+  // =====================================================
+  // INITIALIZE AUTHENTICATION
+  // =====================================================
+
+  const initializeAuth = useCallback(async () => {
+    setLoading(true)
+
+    try {
+      /*
+       * IMPORTANT
+       *
+       * The access token is memory-only.
+       *
+       * After a full browser refresh:
+       *
+       *     accessToken = null
+       *
+       * But the refresh token still exists inside
+       * the HttpOnly cookie.
+       *
+       * The Axios client should handle:
+       *
+       *     /me
+       *       â†“
+       *     401
+       *       â†“
+       *     /auth-user/refresh
+       *       â†“
+       *     HttpOnly refresh cookie
+       *       â†“
+       *     new access token
+       *       â†“
+       *     retry /me
+       *
+       * Therefore we only call /me once during the
+       * initial application authentication check.
+       */
+
+      const response = await authService.getCurrentUser()
+
+      const currentUser = response.data || null
+
+      /*
+       * Store authenticated user in memory/state.
+       */
+
+      setUser(currentUser)
+    } catch {
+      /*
+       * If both:
+       *
+       * /me
+       *
+       * and
+       *
+       * /refresh
+       *
+       * fail, the authentication session is invalid.
+       */
+
+      clearAccessToken()
+
+      setUser(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [setLoading, setUser])
+
+  // =====================================================
+  // INITIAL AUTH CHECK
+  // =====================================================
+
+  useEffect(() => {
+    initializeAuth()
+  }, [initializeAuth])
+
+  // =====================================================
+  // LOGIN
+  // =====================================================
+
+  const login = useCallback(
+    async (username: string, password: string): Promise<IAdminUser | null> => {
+      setLoading(true)
+
+      try {
+        /*
+         * Send login request.
+         *
+         * Backend returns:
+         *
+         *     access_token
+         *     user
+         *
+         * Backend also sets:
+         *
+         *     refresh_token
+         *
+         * as an HttpOnly cookie.
+         */
+
+        const response = await authService.login({
+         username,
+         password,
+        })
+
+        const loginPayload = response.data as
+         | ({ access_token?: string; token?: string; accessToken?: string } | null)
+         | undefined
+
+        const accessToken =
+         loginPayload?.access_token ?? loginPayload?.token ?? loginPayload?.accessToken ?? null
+
+        if (!accessToken) {
+         throw new Error("Login succeeded but no access token was returned.")
+        }
+
+        /*
+         * Store access token in memory.
+         *
+         * DO NOT store the refresh token.
+         *
+         * DO NOT read the refresh token.
+         *
+         * The browser manages the HttpOnly cookie.
+         */
+
+        setAccessToken(accessToken)
+
+        const loggedInUser = response.data ?? null
+
+        if (!loggedInUser) {
+         /*
+           * If your login endpoint does not return the user,
+           * you can explicitly call refreshUser() here.
+           *
+           * But if your goal is to avoid /me after login,
+           * the login endpoint should return the user.
+           */
+
+         throw new Error("Login succeeded but no user was returned.")
+        }
+
+        /*
+         * Store user in auth store.
+         *
+         * Dashboard and other protected routes can now
+         * use this state without calling /me.
+         */
+
+        setUser(loggedInUser)
+
+        return loggedInUser
+      } catch (error) {
+        /*
+         * Login failed.
+         *
+         * Clear both frontend authentication state
+         * and in-memory access token.
+         */
+
+        clearAccessToken()
+
+        setUser(null)
+
+        throw error
+      } finally {
+        setLoading(false)
+      }
+    },
+    [setLoading, setUser]
+  )
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
+  const logout = useCallback(async (): Promise<void> => {
+    setLoading(true)
+
+    try {
+      /*
+       * Backend logout should clear the HttpOnly
+       * refresh-token cookie.
+       */
+
+      await authService.logout()
+    } finally {
+      /*
+       * Always clear the frontend access token.
+       */
+
+      clearAccessToken()
+
+      /*
+       * Clear authenticated user.
+       */
+
+      setUser(null)
+
+      setLoading(false)
+    }
+  }, [setLoading, setUser])
+
+  // =====================================================
+  // REFRESH CURRENT USER
+  // =====================================================
+
+  const refreshUser = useCallback(async (): Promise<void> => {
+    try {
+      /*
+       * This is an EXPLICIT operation.
+       *
+       * It does not automatically run when navigating
+       * between dashboard routes.
+       *
+       * Example:
+       *
+       *     await refreshUser()
+       *
+       * If the access token has expired, Axios should
+       * automatically perform:
+       *
+       *     401
+       *       â†“
+       *     /refresh
+       *       â†“
+       *     new access token
+       *       â†“
+       *     retry /me
+       */
+
+      const response = await authService.getCurrentUser()
+
+      const currentUser = response.data || null
+
+      setUser(currentUser)
+    } catch {
+      /*
+       * If refresh fails, consider the session invalid.
+       */
+
+      clearAccessToken()
+
+      setUser(null)
+    }
+  }, [setUser])
+
+  // =====================================================
+  // AUTHENTICATION STATE
+  // =====================================================
+
+  const isAuthenticated = Boolean(user)
+
+  // =====================================================
+  // CONTEXT VALUE
+  // =====================================================
+
+  const value = useMemo<AuthContextType>(
+    () => ({
+      user,
+      isAuthenticated,
+      isLoading,
+      login,
+      logout,
+      refreshUser,
+    }),
+    [user, isAuthenticated, isLoading, login, logout, refreshUser]
+  )
+
+  // =====================================================
+  // PROVIDER
+  // =====================================================
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
+
+// =====================================================
+// DEFAULT EXPORT
+// =====================================================
+
+export default AuthProvider
+
+===== PROVIDER INDEX =====
+// import { ToolTipProvider } from './toolTipProvider';
+
+export * from "@/providers/AppProviders";
+// export { ToolTipProvider } from './ToolTipProvider';
+
+===== LAYOUTS =====
+import type { CSSProperties } from "react";
+import { Outlet } from "react-router-dom";
+import { Bot } from "lucide-react";
+
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { CommandMenu } from "@/components/CommandMenu";
+import { SiteHeader } from "@/components/site-header";
+import { Button } from "@/components/ui/button";
+
+const layoutStyles = {
+  "--sidebar-width": "280px",
+  "--sidebar-width-icon": "56px",
+  "--header-height": "64px",
+} as CSSProperties;
+
+export default function AdminLayout() {
+  return (
+    <SidebarProvider style={layoutStyles}>
+      <AppSidebar />
+
+      <SidebarInset className="min-w-0">
+        <SiteHeader />
+
+        <main className="flex min-h-0 flex-1 flex-col">
+          <div className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+            <Outlet />
+          </div>
+        </main>
+      </SidebarInset>
+
+      <CommandMenu />
+
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        aria-label="Open AI Assistant"
+        className="
+          fixed
+          bottom-6
+          right-6
+          z-50
+          size-14
+          rounded-full
+          border
+          bg-background
+          shadow-md
+          transition-shadow
+          hover:shadow-lg
+        "
+      >
+      <Bot className="size-6" aria-hidden="true" />
+      </Button>
+    </SidebarProvider>
+  );
+}
+// import type { CSSProperties } from "react";
+// import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+// import { AppSidebar } from "@/components/app-sidebar";
+
+// import { CommandMenu } from "@/components/CommandMenu";
+// import { SiteHeader } from "@/components/site-header";
+// import { Outlet } from "react-router-dom";
+// import { Bot } from "lucide-react";
+// import { Button } from "../ui/button";
+
+// // Server Component â€” no "use client" needed.
+// // SidebarProvider/AppSidebar/SiteHeader have their own client boundaries.
+// export default function AdminLayout() {
+//   return (
+//     <SidebarProvider
+//       style={
+//         {
+//           "--sidebar-width": "280px",
+//           "--sidebar-width-icon": "56px",
+//           "--header-height": "64px",
+//         } as CSSProperties
+//       }
+//     >
+//       <AppSidebar />
+//       <SidebarInset>
+//         <SiteHeader />
+//         <main className="flex flex-1 flex-col">
+//           <div className="mx-auto w-full max-w-[1600px] px-6 py-6">
+//             <Outlet />
+//           </div>
+//         </main>
+//       </SidebarInset>
+//       <CommandMenu />
+
+//       {/* Floating AI Button */}
+//       <Button
+//         // variant="destructive"
+//         size="icon"
+//         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-none bg-white"
+//         aria-label="AI Assistant"
+//       >
+//         <Bot height={56} width={56} />
+//       </Button>
+//     </SidebarProvider>
+//   );
+// }
+import { Outlet } from "react-router-dom";
+
+export function AuthLayout() {
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950 via-slate-900 to-black p-4 font-sans text-slate-100 select-none">
+      <Outlet />
+    </div>
+  );
+}
+
+export default AuthLayout;
+
+===== API CLIENT =====
+/**
+ * HTTP Client & Response Utilities
+ *
+ * Standardized Axios API communication.
+ *
+ * Authentication:
+ * - Access token is kept in memory.
+ * - Refresh token is stored by the backend as an HttpOnly cookie.
+ * - Axios sends cookies with `withCredentials: true`.
+ * - Access token is attached as `Authorization: Bearer <token>`.
+ */
+
+import type { ApiResponse } from '@/types/api-response.types';
+import axios, {
+  AxiosError,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios';
+
+
+// ============================================================
+// API TYPES
+// ============================================================
+
+/**
+ * Standard API error details.
+ */
+export interface ApiErrorDetails {
+  [key: string]: unknown;
+}
+
+
+
+/**
+ * Standard API pagination.
+ */
+export interface Pagination {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+
+// ============================================================
+// API ERROR
+// ============================================================
+
+export class ApiError extends Error {
+  public readonly statusCode: number;
+  public readonly code: string;
+  public readonly details?: ApiErrorDetails;
+
+  constructor(
+    message: string,
+    statusCode: number = 500,
+    code: string = 'API_ERROR',
+    details?: ApiErrorDetails,
+  ) {
+    super(message);
+
+    this.name = 'ApiError';
+    this.statusCode = statusCode;
+    this.code = code;
+    this.details = details;
+
+    Object.setPrototypeOf(
+      this,
+      ApiError.prototype,
+    );
+  }
+}
+
+
+// ============================================================
+// ACCESS TOKEN MANAGEMENT
+// ============================================================
+
+/**
+ * Access token is intentionally kept in memory.
+ *
+ * Do NOT store it in localStorage/sessionStorage if your
+ * authentication architecture requires memory-only JWT storage.
+ */
+
+let accessToken: string | null = null;
+
+
+/**
+ * Set access token.
+ */
+export const setAccessToken = (
+  token: string | null,
+): void => {
+  accessToken = token;
+};
+
+
+/**
+ * Get access token.
+ */
+export const getAccessToken = (): string | null => {
+  return accessToken;
+};
+
+
+/**
+ * Clear access token.
+ */
+export const clearAccessToken = (): void => {
+  accessToken = null;
+};
+
+
+// ============================================================
+// AXIOS CONFIGURATION
+// ============================================================
+
+const API_BASE_URL =
+  import.meta.env.VITE_PUBLIC_API_URL;
+
+
+/**
+ * Axios instance.
+ */
+const axiosClient: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+
+  timeout: 30_000,
+
+  /**
+   * Required for HttpOnly refresh-token cookies.
+   */
+  withCredentials: true,
+
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+});
+
+
+// ============================================================
+// REQUEST INTERCEPTOR
+// ============================================================
+
+axiosClient.interceptors.request.use(
+  (
+    config: InternalAxiosRequestConfig,
+  ) => {
+
+    const token = getAccessToken();
+
+    /**
+     * Add access JWT to protected requests.
+     */
+    if (token) {
+      config.headers.Authorization =
+        `Bearer ${token}`;
+    }
+
+    return config;
+  },
+
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
+
+// ============================================================
+// REFRESH STATE
+// ============================================================
+
+let isRefreshing = false;
+
+let refreshPromise: Promise<string | null> | null = null;
+
+
+// ============================================================
+// REFRESH ACCESS TOKEN
+// ============================================================
+
+const refreshAccessToken =
+  async (): Promise<string | null> => {
+
+    /**
+     * Prevent multiple simultaneous refresh calls.
+     *
+     * If five API requests receive 401 at the same time,
+     * only one /refresh request is sent.
+     */
+
+    if (isRefreshing && refreshPromise) {
+      return refreshPromise;
+    }
+
+    isRefreshing = true;
+
+    refreshPromise = (async () => {
+      try {
+        const response =
+          await axiosClient.post<
+            ApiResponse<{
+              access_token: string;
+              token_type: string;
+            }>
+          >(
+            '/auth-user/refresh',
+            {},
+          );
+
+        const token =
+          response.data?.data?.access_token;
+
+        if (!token) {
+          clearAccessToken();
+
+          return null;
+        }
+
+        setAccessToken(token);
+
+        return token;
+
+      } catch {
+        clearAccessToken();
+
+        return null;
+
+      } finally {
+        isRefreshing = false;
+        refreshPromise = null;
+      }
+    })();
+
+    return refreshPromise;
+  };
+
+
+// ============================================================
+// RESPONSE INTERCEPTOR
+// ============================================================
+
+axiosClient.interceptors.response.use(
+
+  /**
+   * Successful response.
+   */
+  (
+    response: AxiosResponse,
+  ) => {
+
+    const body =
+      response.data as
+      | ApiResponse
+      | unknown;
+
+    /**
+     * If backend returned our standard envelope,
+     * validate the `success` field.
+     */
+    if (
+      body &&
+      typeof body === 'object' &&
+      'success' in body
+    ) {
+
+      const apiResponse =
+        body as ApiResponse;
+
+      if (!apiResponse.success) {
+        throw new ApiError(
+          apiResponse.message
+        );
+      }
+    }
+
+    return response;
+  },
+
+
+  /**
+   * Failed response.
+   */
+  async (
+    error: AxiosError,
+  ) => {
+
+    const originalRequest =
+      error.config as
+      | (InternalAxiosRequestConfig & {
+        _retry?: boolean;
+      })
+      | undefined;
+
+
+    // ----------------------------------------------------
+    // No response from server
+    // ----------------------------------------------------
+
+    if (!error.response) {
+      return Promise.reject(
+        new ApiError(
+          error.message ||
+          'Unable to connect to the server.',
+          0,
+          'NETWORK_ERROR',
+        ),
+      );
+    }
+
+
+    const status =
+      error.response.status;
+
+
+    const responseData =
+      error.response.data as
+      | ApiResponse
+      | undefined;
+
+
+    // ----------------------------------------------------
+    // 401 Unauthorized
+    // ----------------------------------------------------
+
+    if (
+      status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes(
+        '/auth-user/refresh',
+      ) &&
+      !originalRequest.url?.includes(
+        '/auth-user/login',
+      )
+    ) {
+
+      originalRequest._retry = true;
+
+
+      const newToken =
+        await refreshAccessToken();
+
+
+      if (newToken) {
+
+        originalRequest.headers =
+          originalRequest.headers || {};
+
+        originalRequest.headers.Authorization =
+          `Bearer ${newToken}`;
+
+        return axiosClient(
+          originalRequest,
+        );
+      }
+
+
+      /**
+       * Refresh failed.
+       *
+       * Clear in-memory token.
+       *
+       * Do not redirect here because the API client
+       * should not own application routing.
+       */
+
+      clearAccessToken();
+
+      return Promise.reject(
+        new ApiError(
+          responseData?.message ||
+          'Authentication required.',
+          401,
+          responseData?.code ||
+          'UNAUTHORIZED',
+          responseData?.meta || {},
+        ),
+      );
+    }
+
+
+    // ----------------------------------------------------
+    // API error response
+    // ----------------------------------------------------
+
+    const message =
+      responseData?.message ||
+      `HTTP ${status}`;
+
+
+    const code =
+      responseData?.code ||
+      'HTTP_ERROR';
+
+
+    const details =
+      responseData?.meta || {};
+
+
+    return Promise.reject(
+      new ApiError(
+        message,
+        status,
+        code,
+        details,
+      ),
+    );
+  },
+);
+
+
+// ============================================================
+// API CLIENT
+// ============================================================
+
+export class ApiClient {
+
+  private readonly client: AxiosInstance;
+
+
+  constructor(
+    client: AxiosInstance = axiosClient,
+  ) {
+    this.client = client;
+  }
+
+
+  // ========================================================
+  // GET
+  // ========================================================
+
+  async get<T>(
+    endpoint: string,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
+
+    const response =
+      await this.client.get<
+        ApiResponse<T>
+      >(
+        endpoint,
+        config,
+      );
+
+    return response.data;
+  }
+
+
+  // ========================================================
+  // POST
+  // ========================================================
+
+  async post<T>(
+    endpoint: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
+
+    const response =
+      await this.client.post<
+        ApiResponse<T>
+      >(
+        endpoint,
+        data,
+        config,
+      );
+
+    return response.data;
+  }
+
+
+  // ========================================================
+  // PATCH
+  // ========================================================
+
+  async patch<T>(
+    endpoint: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
+
+    const response =
+      await this.client.patch<
+        ApiResponse<T>
+      >(
+        endpoint,
+        data,
+        config,
+      );
+
+    return response.data;
+  }
+
+
+  // ========================================================
+  // PUT
+  // ========================================================
+
+  async put<T>(
+    endpoint: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
+
+    const response =
+      await this.client.put<
+        ApiResponse<T>
+      >(
+        endpoint,
+        data,
+        config,
+      );
+
+    return response.data;
+  }
+
+
+  // ========================================================
+  // DELETE
+  // ========================================================
+
+  async delete<T>(
+    endpoint: string,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
+
+    const response =
+      await this.client.delete<
+        ApiResponse<T>
+      >(
+        endpoint,
+        config,
+      );
+
+    return response.data;
+  }
+
+
+  // ========================================================
+  // GET WITH QUERY
+  // ========================================================
+
+  async getWithQuery<T>(
+    endpoint: string,
+    params?: Record<
+      string,
+      string | number | boolean | Date | null | undefined
+    >,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
+
+    const searchParams =
+      new URLSearchParams();
+
+
+    if (params) {
+
+      Object.entries(params).forEach(
+        ([key, value]) => {
+
+          if (
+            value !== null &&
+            value !== undefined
+          ) {
+            searchParams.set(
+              key,
+              String(value),
+            );
+          }
+        },
+      );
+    }
+
+
+    const queryString =
+      searchParams.toString();
+
+
+    const url =
+      queryString
+        ? `${endpoint}?${queryString}`
+        : endpoint;
+
+
+    return this.get<T>(
+      url,
+      config,
+    );
+  }
+}
+
+
+// ============================================================
+// RESPONSE BUILDER
+// ============================================================
+
+export class ResponseBuilder {
+
+  /**
+   * Build successful API response.
+   */
+  static success<T>(
+    data: T,
+    meta?: ApiResponse<T>['meta'],
+  ): ApiResponse<T> {
+
+    return {
+      success: true,
+      data,
+      meta: {
+        timestamp: new Date().toISOString(),
+
+        version: 'v1',
+
+        ...meta,
+      },
+
+      code: '',
+      message: '',
+
+    };
+  }
+
+
+  /**
+   * Build error API response.
+   */
+  static error(
+    message: string,
+    code: string = 'ERROR',
+    details?: ApiErrorDetails,
+  ): ApiResponse<null> {
+
+    return {
+      success: false,
+
+      data: null,
+
+      errors: [
+        {
+          code,
+          message,
+          ...details,
+        }
+      ],
+
+      meta: {
+        timestamp: new Date().toISOString(),
+
+        version: 'v1',
+      },
+
+      code: '',
+      message: '',
+
+    };
+  }
+
+
+  /**
+   * Build paginated API response.
+   */
+  static paginated<T>(
+    items: T[],
+    total: number,
+    page: number,
+    pageSize: number,
+  ): ApiResponse<T[]> {
+
+    const totalPages =
+      Math.ceil(
+        total / pageSize,
+      );
+
+    return {
+      success: true,
+
+      data: items,
+
+      meta: {
+        timestamp: new Date().toISOString(),
+
+        version: 'v1',
+
+        pagination: {
+          total,
+          page,
+          pageSize,
+          totalPages,
+        },
+      },
+
+      code: '',
+      message: '',
+
+    };
+  }
+}
+
+
+// ============================================================
+// VALIDATION ERROR BUILDER
+// ============================================================
+
+export class ValidationErrorBuilder {
+
+  private errors: Record<
+    string,
+    string[]
+  > = {};
+
+
+  addError(
+    field: string,
+    message: string,
+  ): this {
+
+    if (!this.errors[field]) {
+      this.errors[field] = [];
+    }
+
+    this.errors[field].push(
+      message,
+    );
+
+    return this;
+  }
+
+
+  hasErrors(): boolean {
+    return (
+      Object.keys(
+        this.errors,
+      ).length > 0
+    );
+  }
+
+
+  build(): ApiResponse<null> {
+
+    return ResponseBuilder.error(
+      'Validation failed',
+      'VALIDATION_ERROR',
+      this.errors,
+    );
+  }
+}
+
+
+// ============================================================
+// SINGLE API CLIENT INSTANCE
+// ============================================================
+
+export const apiClient =
+  new ApiClient();
+
+
+// ============================================================
+// EXPORT AXIOS INSTANCE
+// ============================================================
+
+export {
+  axiosClient,
+};
+
+
+===== AUTH SESSION =====
+
+// import { jwtDecode } from "jwt-decode";
+
+// export const SESSION_COOKIE_NAME = '__session';
+
+// /**
+//  * Retrieves the session token from the cookie store.
+//  * @returns The session token string, or null if not found.
+//  */
+// export async function getSessionToken(): Promise<string | null> {
+//   const cookieStore = localStorage.getItem('cookieStore') ? Promise.resolve(JSON.parse(localStorage.getItem('cookieStore')!)) : Promise.resolve(null);
+//   return (await cookieStore)?.[SESSION_COOKIE_NAME]?.value || null;
+// }
+// /**
+//  * Verifies the session token against Firebase Admin SDK.
+//  * @returns The user's UID if the session is valid, or null otherwise.
+//  */
+// export async function verifySession(): Promise<string | null> {
+//   const token = await getSessionToken();
+//   if (!token) return null;
+
+//   try {
+//     // Assuming adminAuth.verifySessionCookie returns a structure containing the user ID (UID)
+//     const decodedToken = await jwtDecode(token);
+//     return decodedToken?.sub || null; // Return UID if available
+//   } catch (error) {
+//     console.warn(
+//       'Firebase session verification failed:',
+//       error instanceof Error ? error.message : String(error)
+//     );
+//     // Log the failure but return null to allow graceful fallback
+//     return null;
+//   }
+// }
+
+===== AUTH STORE =====
+import { create } from 'zustand';
+import type { IAdminUser } from '@/features/admins';
+
+export interface AuthStore {
+  user: IAdminUser | null;
+  isLoading: boolean;
+
+  setUser: (user: IAdminUser | null) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+export const useAuthStore = create<AuthStore>((set) => ({
+  user: null,
+  isLoading: true,
+
+  setUser: (user) => set({ user }),
+
+  setLoading: (loading) => set({ isLoading: loading }),
+}));
+===== ROUTES =====
+export const ROUTES = {
+  LOGIN: '/login',
+
+  DASHBOARD: '/',
+
+  USERS: '/users',
+  USER_DETAILS: '/users/:id',
+
+  VILLAGES: '/workspaces',
+  VILLAGE_DETAILS: '/workspaces/:id',
+
+  HOMESCHOOLING: '/homeschooling',
+
+  FEED: '/feed',
+
+  MEETUPS: '/agents',
+  MEETUP_DETAILS: '/agents/:id',
+
+  WEBINARS: '/memorys',
+
+  RESOURCES: '/connectors',
+
+  MEMBERSHIPS: '/memberships',
+
+  COINS: '/coins',
+
+  NOTIFICATIONS: '/notifications',
+
+  MODERATION: '/moderation',
+
+  ANALYTICS: '/analytics',
+
+  SETTINGS: '/settings',
+
+  CHAT: '/chat',
+  AGENTS: '/agents',
+  MARKETPLACE: '/marketplace',
+  MEMORY: '/memory',
+  INTEGRATIONS: '/integrations',
+  PLUGINS: '/plugins',
+  SKILLS: '/skills',
+  TEMPLATES: '/templates',
+  HOME: '/',
+} as const;
+
+===== SOURCE TREE =====
+Folder PATH listing for volume New Volume
+Volume serial number is 0000016B FC06:7E96
+P:\PROJECT\STRIX ENGINEERING STUDIO\STRIX-CONSOLE\SRC
+¦   App.css
+¦   App.tsx
+¦   main.tsx
+¦   router.tsx
+¦   
++---app
+¦       globals.css
+¦       layout.tsx
+¦       page.tsx
+¦       
++---assets
+¦       hero.png
+¦       react.svg
+¦       vite.svg
+¦       
++---components
+¦   ¦   app-sidebar.tsx
+¦   ¦   CommandMenu.tsx
+¦   ¦   KpiCard.tsx
+¦   ¦   nav-documents.tsx
+¦   ¦   nav-main.tsx
+¦   ¦   nav-secondary.tsx
+¦   ¦   nav-user.tsx
+¦   ¦   PageHeader.tsx
+¦   ¦   section-cards.tsx
+¦   ¦   site-header.tsx
+¦   ¦   StatusBadge.tsx
+¦   ¦   
+¦   +---charts
+¦   +---dialogs
+¦   +---forms
+¦   +---layouts
+¦   ¦       AdminLayout.tsx
+¦   ¦       AuthLayout.tsx
+¦   ¦       
+¦   +---maps
+¦   ¦       LeafletMap.tsx
+¦   ¦       
+¦   +---tables
+¦   ¦       DataTable.tsx
+¦   ¦       DataTablePagination.tsx
+¦   ¦       DataTableSortIcon.tsx
+¦   ¦       DataTableToolbar.tsx
+¦   ¦       FilterDropdown.tsx
+¦   ¦       
+¦   +---ui
+¦   ¦       accordion.tsx
+¦   ¦       alert-dialog.tsx
+¦   ¦       alert.tsx
+¦   ¦       aspect-ratio.tsx
+¦   ¦       attachment.tsx
+¦   ¦       avatar.tsx
+¦   ¦       badge.tsx
+¦   ¦       breadcrumb.tsx
+¦   ¦       bubble.tsx
+¦   ¦       button-group.tsx
+¦   ¦       button.tsx
+¦   ¦       calendar.tsx
+¦   ¦       card.tsx
+¦   ¦       carousel.tsx
+¦   ¦       chart.tsx
+¦   ¦       checkbox.tsx
+¦   ¦       collapsible.tsx
+¦   ¦       combobox.tsx
+¦   ¦       command.tsx
+¦   ¦       context-menu.tsx
+¦   ¦       dialog.tsx
+¦   ¦       direction.tsx
+¦   ¦       drawer.tsx
+¦   ¦       dropdown-menu.tsx
+¦   ¦       empty.tsx
+¦   ¦       field.tsx
+¦   ¦       hover-card.tsx
+¦   ¦       input-group.tsx
+¦   ¦       input-otp.tsx
+¦   ¦       input.tsx
+¦   ¦       item.tsx
+¦   ¦       kbd.tsx
+¦   ¦       label.tsx
+¦   ¦       marker.tsx
+¦   ¦       menubar.tsx
+¦   ¦       message-scroller.tsx
+¦   ¦       message.tsx
+¦   ¦       native-select.tsx
+¦   ¦       navigation-menu.tsx
+¦   ¦       pagination.tsx
+¦   ¦       popover.tsx
+¦   ¦       progress.tsx
+¦   ¦       radio-group.tsx
+¦   ¦       resizable.tsx
+¦   ¦       scroll-area.tsx
+¦   ¦       select.tsx
+¦   ¦       separator.tsx
+¦   ¦       sheet.tsx
+¦   ¦       sidebar.tsx
+¦   ¦       skeleton.tsx
+¦   ¦       slider.tsx
+¦   ¦       spinner.tsx
+¦   ¦       switch.tsx
+¦   ¦       table.tsx
+¦   ¦       tabs.tsx
+¦   ¦       textarea.tsx
+¦   ¦       toast.tsx
+¦   ¦       toggle-group.tsx
+¦   ¦       toggle.tsx
+¦   ¦       tooltip.tsx
+¦   ¦       
+¦   +---wrappers
+¦           FormFooter.tsx
+¦           FormWrapper.tsx
+¦           
++---features
+¦   +---admins
+¦   ¦   ¦   index.ts
+¦   ¦   ¦   
+¦   ¦   +---components
+¦   ¦   ¦       AdminUserDialog.tsx
+¦   ¦   ¦       
+¦   ¦   +---hooks
+¦   ¦   ¦       useAdmins.ts
+¦   ¦   ¦       
+¦   ¦   +---pages
+¦   ¦   ¦       AdminUsersPage.tsx
+¦   ¦   ¦       
+¦   ¦   +---schemas
+¦   ¦   ¦       index.ts
+¦   ¦   ¦       
+¦   ¦   +---services
+¦   ¦   ¦       adminUsersService.ts
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           admins.types.ts
+¦   ¦           index.ts
+¦   ¦           
+¦   +---auth
+¦   ¦   ¦   index.ts
+¦   ¦   ¦   
+¦   ¦   +---hooks
+¦   ¦   ¦       useAuth.ts
+¦   ¦   ¦       
+¦   ¦   +---pages
+¦   ¦   ¦       LoginPage.tsx
+¦   ¦   ¦       
+¦   ¦   +---schemas
+¦   ¦   ¦       auth.schema.ts
+¦   ¦   ¦       
+¦   ¦   +---services
+¦   ¦   ¦       authService.ts
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           auth.types.ts
+¦   ¦           
+¦   +---dashboard
+¦   ¦   +---pages
+¦   ¦           DashboardPage.tsx
+¦   ¦           
+¦   +---leads
+¦   ¦       LeadsPage.tsx
+¦   ¦       
+¦   +---map
+¦   ¦       MapPage.tsx
+¦   ¦       
+¦   +---organizations
+¦   ¦   ¦   index.ts
+¦   ¦   ¦   
+¦   ¦   +---hooks
+¦   ¦   ¦       useCommunity.ts
+¦   ¦   ¦       
+¦   ¦   +---pages
+¦   ¦   ¦       OrganizationDetailsPage.tsx
+¦   ¦   ¦       OrganizationEditPage.tsx
+¦   ¦   ¦       OrganizationsPage.tsx
+¦   ¦   ¦       
+¦   ¦   +---schemas
+¦   ¦   ¦       comunity.schema.ts
+¦   ¦   ¦       index.ts
+¦   ¦   ¦       
+¦   ¦   +---services
+¦   ¦   ¦       communityService.ts
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           community.types.ts
+¦   ¦           index.ts
+¦   ¦           
+¦   +---search
+¦   ¦       SearchPage.tsx
+¦   ¦       
+¦   +---users
+¦       ¦   index.ts
+¦       ¦   
+¦       +---components
+¦       ¦       UserForm.tsx
+¦       ¦       
+¦       +---constants
+¦       ¦       index.ts
+¦       ¦       
+¦       +---hooks
+¦       ¦       useUsers.ts
+¦       ¦       
+¦       +---pages
+¦       ¦       CreateUserPage.tsx
+¦       ¦       EditUserPage.tsx
+¦       ¦       PeoplePage.tsx
+¦       ¦       ProfilePage.tsx
+¦       ¦       UserDetailsPage.tsx
+¦       ¦       
+¦       +---schemas
+¦       ¦       index.ts
+¦       ¦       
+¦       +---services
+¦       ¦       usersService.ts
+¦       ¦       
+¦       +---types
+¦               index.ts
+¦               users.enums.ts
+¦               users.types.ts
+¦               
++---hooks
+¦       use-mobile.ts
+¦       useCommandMenu.ts
+¦       
++---lib
+¦   ¦   errors.ts
+¦   ¦   utils copy.ts
+¦   ¦   utils.ts
+¦   ¦   validation.ts
+¦   ¦   
+¦   +---api
+¦   ¦       client.ts
+¦   ¦       
+¦   +---auth
+¦   ¦       session.ts
+¦   ¦       
+¦   +---constants
+¦   ¦       COLLECTIONS.ts
+¦   ¦       QUERY_KEYS.ts
+¦   ¦       ROUTES.ts
+¦   ¦       
+¦   +---store
+¦           authStore.ts
+¦           
++---providers
+¦       AppProviders.tsx
+¦       AuthProvider.tsx
+¦       index.tsx
+¦       ToolTipProvider.tsx
+¦       
++---types
+        api-response.types.ts
+        datatable.types.ts
+        form.types.ts
+        index.ts
+        PaginatedResponse.ts
+        
+
+===== INSTALLED PACKAGES =====
+Legend: production dependency, optional only, dev only
+
+console@0.0.1+1 P:\project\Strix Engineering Studio\strix-console (PRIVATE)
+
+dependencies:
+@base-ui/react 1.6.0
+@dnd-kit/core 6.3.1
+@dnd-kit/modifiers 9.0.0
+@dnd-kit/sortable 10.0.0
+@dnd-kit/utilities 3.2.2
+@firebase/auth 1.13.4
+@fontsource-variable/geist 5.3.0
+@hookform/resolvers 5.7.1
+@phosphor-icons/react 2.1.10
+@radix-ui/react-form 0.1.16
+@shadcn/react 0.2.1
+@tailwindcss/vite 4.3.3
+@tanstack/react-query 5.101.4
+@tanstack/react-table 8.21.3
+axios 1.19.0
+class-variance-authority 0.7.1
+clsx 2.1.1
+cmdk 1.1.1
+date-fns 4.4.0
+embla-carousel-react 8.6.0
+emoji-picker-react 4.19.1
+firebase 12.17.0
+firebase-admin 14.2.0
+input-otp 1.4.2
+install 0.13.0
+jwt-decode 4.0.0
+lucide-react 1.28.0
+next 16.3.4
+next-themes 0.4.6
+nextjs-toploader 3.9.17
+radix-ui 1.6.7
+react 19.2.8
+react-day-picker 10.0.1
+react-dom 19.2.8
+react-helmet-async 3.0.0
+react-hook-form 7.84.0
+react-resizable-panels 4.12.2
+react-router-dom 7.18.2
+recharts 3.10.1
+shadcn 4.19.0
+sonner 2.0.7
+tailwind-merge 3.6.0
+tw-animate-css 1.4.0
+vaul 1.1.2
+zod 4.4.3
+zustand 5.0.14
+
+devDependencies:
+@babel/core 7.29.7
+@eslint/js 10.0.1
+@rolldown/plugin-babel 0.2.3
+@tailwindcss/postcss 4.3.3
+@testing-library/jest-dom 6.10.0
+@types/babel__core 7.20.5
+@types/leaflet 1.9.22
+@types/node 24.13.3
+@types/react 19.2.18
+@types/react-dom 19.2.4
+autoprefixer 10.5.4
+babel-plugin-react-compiler 1.0.0
+dotenv 17.4.2
+dotenv-cli 11.0.0
+eslint 10.8.0
+eslint-plugin-react-hooks 7.1.1
+eslint-plugin-react-refresh 0.5.3
+globals 17.9.0
+leaflet 1.9.4
+postcss 8.5.25
+prettier 3.9.6
+prettier-plugin-tailwindcss 0.8.1
+react-leaflet 5.0.0
+tailwindcss 4.3.3
+typescript 6.0.3
+typescript-eslint 8.65.0
+vite-tsconfig-paths 6.1.1
+vitest 4.1.10
+
+===== IMPORT.META =====
+src\lib\api\client.ts:122:  import.meta.env.VITE_PUBLIC_API_URL;
+
+===== REACT ROUTER =====
+src\App.tsx:1:import { RouterProvider } from "react-router-dom";
+src\App.tsx:2:import { router } from "./router";
+src\App.tsx:8:      <RouterProvider router={router} />
+src\components\app-sidebar.tsx:12:import { Link } from "react-router-dom";
+src\components\CommandMenu.tsx:2:import { useNavigate } from "react-router-dom";
+src\components\CommandMenu.tsx:52:  const navigate = useNavigate();
+src\components\CommandMenu.tsx:76:  const handleNavigate = useCallback(
+src\components\CommandMenu.tsx:79:      navigate(href);
+src\components\CommandMenu.tsx:81:    [navigate, closeMenu],
+src\components\CommandMenu.tsx:109:                  onSelect={() => handleNavigate(item.href)}
+src\components\CommandMenu.tsx:125:            <CommandItem onSelect={() => handleNavigate("/users")}>
+src\components\CommandMenu.tsx:130:            <CommandItem onSelect={() => handleNavigate("/moderation")}>
+src\components\layouts\AdminLayout.tsx:2:import { Outlet } from "react-router-dom";
+src\components\layouts\AdminLayout.tsx:64:// import { Outlet } from "react-router-dom";
+src\components\layouts\AuthLayout.tsx:1:import { Outlet } from "react-router-dom";
+src\components\nav-main.tsx:9:import { Link } from "react-router-dom";
+src\components\nav-user.tsx:1:import { Link } from "react-router-dom";
+src\components\site-header.tsx:3:import { Link, useLocation } from "react-router-dom";
+src\components\site-header.tsx:45: * Strix route labels.
+src\components\site-header.tsx:51:const routeLabels: Record<string, string> = {
+src\components\site-header.tsx:62:  const { pathname } = useLocation();
+src\components\site-header.tsx:79:      routeLabels[segment] ??
+src\features\auth\pages\LoginPage.tsx:17:import { useNavigate } from "react-router-dom";
+src\features\auth\pages\LoginPage.tsx:21:  const router = useNavigate();
+src\features\auth\pages\LoginPage.tsx:46:      router("/");
+src\features\dashboard\pages\DashboardPage.tsx:1:import { Link } from "react-router-dom";
+src\features\leads\LeadsPage.tsx:13:import { Link, useNavigate } from "react-router-dom";
+src\features\leads\LeadsPage.tsx:257:  const navigate = useNavigate();
+src\features\leads\LeadsPage.tsx:395:              <DropdownMenuItem onClick={() => navigate(`/leads/${lead.id}`)}>
+src\features\leads\LeadsPage.tsx:400:                onClick={() => navigate(`/research?lead=${lead.id}`)}
+src\features\leads\LeadsPage.tsx:532:        onRowClick={(lead) => navigate(`/leads/${lead.id}`)}
+src\features\map\MapPage.tsx:9:import { Link } from "react-router-dom";
+src\features\organizations\pages\OrganizationDetailsPage.tsx:1:import { useParams } from "react-router-dom";
+src\features\organizations\pages\OrganizationDetailsPage.tsx:31:  const { id } = useParams();
+src\features\organizations\pages\OrganizationEditPage.tsx:4:import { useNavigate, useParams } from "react-router-dom";
+src\features\organizations\pages\OrganizationEditPage.tsx:25:  const { id } = useParams();
+src\features\organizations\pages\OrganizationEditPage.tsx:26:  const router = useNavigate();
+src\features\organizations\pages\OrganizationEditPage.tsx:74:          router(`/workspaces/${community.data?.id}`);
+src\features\organizations\pages\OrganizationEditPage.tsx:221:                onClick={() => router(-1)}
+src\features\organizations\pages\OrganizationsPage.tsx:28:import { Link, useNavigate } from "react-router-dom";
+src\features\organizations\pages\OrganizationsPage.tsx:56:  const router = useNavigate();
+src\features\organizations\pages\OrganizationsPage.tsx:303:        onRowClick={(cmty) => router(`/workspaces/${cmty.id}`)}
+src\features\search\SearchPage.tsx:13:import { Link } from "react-router-dom";
+src\features\users\pages\CreateUserPage.tsx:10:import { useNavigate } from "react-router-dom";
+src\features\users\pages\CreateUserPage.tsx:13:  const router = useNavigate();
+src\features\users\pages\CreateUserPage.tsx:19:      onSuccess: () => router("/users"),
+src\features\users\pages\CreateUserPage.tsx:27:          <Button variant="ghost" onClick={() => router(-1)} className="mb-3">
+src\features\users\pages\CreateUserPage.tsx:41:        onCancel={() => router(-1)}
+src\features\users\pages\EditUserPage.tsx:10:import { useNavigate, useParams } from "react-router-dom";
+src\features\users\pages\EditUserPage.tsx:13:  const router = useNavigate();
+src\features\users\pages\EditUserPage.tsx:14:  const params = useParams();
+src\features\users\pages\EditUserPage.tsx:37:          router("/users");
+src\features\users\pages\EditUserPage.tsx:46:        <Button variant="ghost" onClick={() => router(-1)} className="mb-3">
+src\features\users\pages\EditUserPage.tsx:69:        onCancel={() => router(-1)}
+src\features\users\pages\PeoplePage.tsx:14:import { Link, useNavigate } from "react-router-dom";
+src\features\users\pages\PeoplePage.tsx:20:  const router = useNavigate();
+src\features\users\pages\PeoplePage.tsx:145:        onRowClick={(user) => router(`/users/${user.id}`)}
+src\lib\constants\ROUTES.ts:1:export const ROUTES = {
+src\providers\AuthProvider.tsx:54:   * This does NOT run automatically on every route change.
+src\providers\AuthProvider.tsx:225:         * Dashboard and other protected routes can now
+src\providers\AuthProvider.tsx:293:       * between dashboard routes.
+src\providers\ToolTipProvider.tsx:5:import { Outlet } from "react-router-dom";
+src\router.tsx:1:import { createBrowserRouter, Navigate } from "react-router-dom";
+src\router.tsx:29:export const router = createBrowserRouter([
+src\router.tsx:107:    element: <Navigate to="/" replace />,
+
+===== DONE =====

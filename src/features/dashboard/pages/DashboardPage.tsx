@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import Link from "next/link";
 import {
   ArrowRightIcon,
   Building2Icon,
@@ -151,7 +151,7 @@ export default function DashboardPage() {
             </div>
 
             <Link
-              to="/map"
+              href="/map"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               Open map
@@ -217,7 +217,7 @@ export default function DashboardPage() {
             {priorityLeads.map((lead) => (
               <Link
                 key={lead.name}
-                to="/leads"
+                href="/leads"
                 className="flex items-center justify-between gap-4 px-6 py-4 transition-colors hover:bg-muted/40"
               >
                 <div className="min-w-0">
@@ -239,7 +239,7 @@ export default function DashboardPage() {
 
           <div className="border-t p-4">
             <Link
-              to="/leads"
+              href="/leads"
               className="flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
             >
               View all leads
@@ -262,7 +262,7 @@ export default function DashboardPage() {
             </div>
 
             <Link
-              to="/signals"
+              href="/signals"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               View all
@@ -273,7 +273,7 @@ export default function DashboardPage() {
             {signals.map((signal) => (
               <Link
                 key={`${signal.company}-${signal.title}`}
-                to="/signals"
+                href="/signals"
                 className="flex items-center justify-between gap-4 px-6 py-4 transition-colors hover:bg-muted/40"
               >
                 <div className="flex min-w-0 items-start gap-3">
@@ -309,7 +309,7 @@ export default function DashboardPage() {
             </div>
 
             <Link
-              to="/research"
+              href="/research"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               View queue
@@ -320,7 +320,7 @@ export default function DashboardPage() {
             {researchQueue.map((company) => (
               <Link
                 key={company.name}
-                to="/research"
+                href="/research"
                 className="flex items-center justify-between gap-4 px-6 py-4 transition-colors hover:bg-muted/40"
               >
                 <div className="min-w-0">
@@ -351,7 +351,7 @@ export default function DashboardPage() {
           </div>
 
           <Link
-            to="/search"
+            href="/search"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Search leads
@@ -405,7 +405,7 @@ function RecentSearch({
 }) {
   return (
     <Link
-      to="/search"
+      href="/search"
       className="flex items-center justify-between gap-4 px-6 py-4 transition-colors hover:bg-muted/40"
     >
       <div className="min-w-0">
@@ -417,3 +417,4 @@ function RecentSearch({
     </Link>
   );
 }
+

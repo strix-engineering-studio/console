@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ADMIN FEATURE - Overview
  *
  * This feature provides administrative functionality for managing users:
@@ -8,7 +8,7 @@
  *  - Browse all admin users via UsersPage
  *
  * Data Flow:
- *   Form → Server Actions (firestoreService) → Firestore
+ *   Form â†’ Server Actions (firestoreService) â†’ Firestore
  */
 
 export * from './pages/AdminUsersPage';

@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 
 import {
   useCommunityQuery,
@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 
 export default function CommunityEditPage() {
   const { id } = useParams();
-  const router = useNavigate();
+  const router = useRouter();
 
   const { data: community, isLoading } = useCommunityQuery(id as string);
 
@@ -71,7 +71,7 @@ export default function CommunityEditPage() {
       },
       {
         onSuccess() {
-          router(`/workspaces/${community.data?.id}`);
+          router.push(`/workspaces/${community.data?.id}`);
         },
       },
     );
@@ -218,7 +218,7 @@ export default function CommunityEditPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router(-1)}
+                onClick={() => router.back()}
               >
                 Cancel
               </Button>
@@ -233,3 +233,4 @@ export default function CommunityEditPage() {
     </div>
   );
 }
+

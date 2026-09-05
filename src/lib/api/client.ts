@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HTTP Client & Response Utilities
  *
  * Standardized Axios API communication.
@@ -119,7 +119,7 @@ export const clearAccessToken = (): void => {
 // ============================================================
 
 const API_BASE_URL =
-  import.meta.env.VITE_PUBLIC_API_URL;
+  process.env.NEXT_PUBLIC_API_URL;
 
 
 /**
@@ -767,4 +767,6 @@ export const apiClient =
 export {
   axiosClient,
 };
+
+
 

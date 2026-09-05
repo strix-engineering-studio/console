@@ -1,3 +1,5 @@
+﻿"use client";
+
 import React, { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -10,7 +12,7 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 import { DataTable } from "@/components/tables/DataTable";
 import { Button } from "@/components/ui/button";
@@ -129,10 +131,10 @@ const INDUSTRIES = [
 
 const EMPLOYEE_RANGES = [
   "Any Size",
-  "1–20",
-  "20–50",
-  "50–200",
-  "200–500",
+  "1â€“20",
+  "20â€“50",
+  "50â€“200",
+  "200â€“500",
   "500+",
 ];
 
@@ -303,7 +305,7 @@ export const SearchLeadsPage: React.FC = () => {
               </p>
 
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {lead.industry} · {lead.domain}
+                {lead.industry} Â· {lead.domain}
               </p>
             </div>
           </div>
@@ -359,7 +361,7 @@ export const SearchLeadsPage: React.FC = () => {
 
         if (lead.status === "existing") {
           return (
-            <Link to={`/leads/${lead.id}`}>
+            <Link href={`/leads/${lead.id}`}>
               <Button
                 variant="ghost"
                 size="sm"
@@ -546,13 +548,13 @@ export const SearchLeadsPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>{summary.total} found</span>
 
-              <span>·</span>
+              <span>Â·</span>
 
               <span className="text-emerald-600 dark:text-emerald-400">
                 {summary.new} new
               </span>
 
-              <span>·</span>
+              <span>Â·</span>
 
               <span>{summary.existing} already known</span>
             </div>
@@ -619,3 +621,4 @@ export const SearchLeadsPage: React.FC = () => {
 };
 
 export default SearchLeadsPage;
+

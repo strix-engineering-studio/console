@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enums for User-related types
  * These enums provide type safety for fixed value sets in the user domain
  */
@@ -33,3 +33,4 @@ export enum EmailPreferenceType {
   RESOURCES = 'connectors',
   PROFILE = 'profile',
 }
+

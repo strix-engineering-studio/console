@@ -1,4 +1,4 @@
-export const ROUTES = {
+﻿export const ROUTES = {
   LOGIN: '/login',
 
   DASHBOARD: '/',
@@ -42,3 +42,4 @@ export const ROUTES = {
   TEMPLATES: '/templates',
   HOME: '/',
 } as const;
+

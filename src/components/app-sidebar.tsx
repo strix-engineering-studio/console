@@ -1,4 +1,4 @@
-import * as React from "react";
+﻿import * as React from "react";
 import {
   LayoutDashboardIcon,
   SearchIcon,
@@ -9,7 +9,7 @@ import {
   Settings2Icon,
 } from "lucide-react";
 
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 import { NavMain } from "@/components/nav-main";
 import {
@@ -77,7 +77,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               size="lg"
               className="data-[slot=sidebar-menu-button]:p-1.5"
             >
-              <Link to="/" className="flex items-center gap-3">
+              <Link href="/" className="flex items-center gap-3">
                 <div className="flex size-10 shrink-0 items-center justify-center bg-foreground text-background">
                   <span className="font-serif text-lg italic">S</span>
                 </div>
@@ -125,3 +125,4 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   );
 }
+

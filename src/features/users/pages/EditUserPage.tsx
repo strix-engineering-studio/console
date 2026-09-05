@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ArrowLeft } from "lucide-react";
 
@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { UserForm } from "../components/UserForm";
 import type { EditUserFormValues } from "../schemas";
 import { useUpdateUserMutation, useUserQuery } from "../hooks/useUsers";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 
 export default function EditUserPage() {
-  const router = useNavigate();
+  const router = useRouter();
   const params = useParams();
 
   const userId = params.id as string;
@@ -34,7 +34,7 @@ export default function EditUserPage() {
       },
       {
         onSuccess: () => {
-          router("/users");
+          router.push("/users");
         },
       },
     );
@@ -43,7 +43,7 @@ export default function EditUserPage() {
   return (
     <div className="container mx-auto max-w-7xl space-y-6 p-6">
       <div>
-        <Button variant="ghost" onClick={() => router(-1)} className="mb-3">
+        <Button variant="ghost" onClick={() => router.back()} className="mb-3">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
@@ -66,9 +66,10 @@ export default function EditUserPage() {
           gender: user.gender,
         }}
         onSubmit={handleSubmit}
-        onCancel={() => router(-1)}
+        onCancel={() => router.back()}
         isSubmitting={updateUser.isPending}
       />
     </div>
   );
 }
+

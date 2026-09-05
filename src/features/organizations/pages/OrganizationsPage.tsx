@@ -1,3 +1,5 @@
+﻿"use client";
+
 import React, { useState } from "react";
 
 import {
@@ -25,7 +27,8 @@ import {
   type ICommunity,
 } from "../types";
 
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   MoreHorizontal,
   Eye,
@@ -53,7 +56,7 @@ export const OrganizationsPage: React.FC = () => {
 
   const [isGroupOpen, setIsGroupOpen] = useState(false);
 
-  const router = useNavigate();
+  const router = useRouter();
 
   // Group Form state
   const [groupName, setGroupName] = useState("");
@@ -206,14 +209,14 @@ export const OrganizationsPage: React.FC = () => {
 
             <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuItem>
-                <Link to={`/admin/workspaces/${community.id}`}>
+                <Link href={`/workspaces/${community.id}`} className="flex items-center">
                   <Eye className="mr-2 h-4 w-4" />
                   View Details
                 </Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem>
-                <Link to={`/admin/workspaces/${community.id}/edit`}>
+                <Link href={`/workspaces/${community.id}/edit`} className="flex items-center">
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit Community
                 </Link>
@@ -222,21 +225,21 @@ export const OrganizationsPage: React.FC = () => {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem>
-                <Link to={`/admin/workspaces/${community.id}/members`}>
+                <Link href={`/workspaces/${community.id}/members`} className="flex items-center">
                   <Users className="mr-2 h-4 w-4" />
                   Manage Members
                 </Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem>
-                <Link to={`/admin/workspaces/${community.id}/messages`}>
+                <Link href={`/workspaces/${community.id}/messages`} className="flex items-center">
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Community Chats
                 </Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem>
-                <Link to={`/admin/workspaces/${community.id}/analytics`}>
+                <Link href={`/workspaces/${community.id}/analytics`} className="flex items-center">
                   <BarChart3 className="mr-2 h-4 w-4" />
                   Analytics
                 </Link>
@@ -261,11 +264,6 @@ export const OrganizationsPage: React.FC = () => {
       },
     },
   ];
-
-  console.log("OrganizationsPage data:", data);
-  console.log(data);
-  console.log(columns);
-  console.log(data?.data?.length);
 
   return (
     <div className="animate-fade-in space-y-6 p-6">
@@ -300,7 +298,7 @@ export const OrganizationsPage: React.FC = () => {
         // enableSearch
         // enableSorting
 
-        onRowClick={(cmty) => router(`/workspaces/${cmty.id}`)}
+        onRowClick={(cmty) => router.push(`/workspaces/${cmty.id}`)}
         toolbar={
           <Button
             onClick={() => setIsGroupOpen(true)}
@@ -398,3 +396,4 @@ export const OrganizationsPage: React.FC = () => {
 };
 
 export default OrganizationsPage;
+

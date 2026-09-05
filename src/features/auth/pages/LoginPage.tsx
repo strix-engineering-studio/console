@@ -1,3 +1,5 @@
+﻿"use client";
+
 import React from "react";
 
 import { useForm } from "react-hook-form";
@@ -14,11 +16,11 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock } from "lucide-react";
 
 import { type LoginFormValues, loginSchema } from "../schemas/auth.schema";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
 
 export default function LoginPage() {
-  const router = useNavigate();
+  const router = useRouter();
   const { login } = useAuth();
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -43,7 +45,7 @@ export default function LoginPage() {
 
       toast.success("Login successful");
 
-      router("/");
+      router.push("/");
     } catch (error: unknown) {
       const err = error as Error;
       toast.error(err?.message || "Login failed");
@@ -137,3 +139,4 @@ export default function LoginPage() {
     </Card>
   );
 }
+

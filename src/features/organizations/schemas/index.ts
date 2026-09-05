@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 import {
   ICommunityAccessType,
@@ -30,3 +30,4 @@ export const updateCommunitySchema = createCommunitySchema.partial();
 
 export type CreateCommunityDTO = z.infer<typeof createCommunitySchema>;
 export type UpdateCommunityDTO = z.infer<typeof updateCommunitySchema>;
+

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // Server Component — no "use client"
 import type { ElementType } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -166,3 +167,4 @@ export function mapToStatus(value: string): StatusVariant {
   };
   return map[value] ?? 'inactive';
 }
+

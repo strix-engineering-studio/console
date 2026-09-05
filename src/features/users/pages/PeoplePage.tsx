@@ -1,3 +1,5 @@
+﻿"use client";
+
 import React from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useUsersQuery } from "../hooks/useUsers";
@@ -11,13 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PlusCircle, MoreHorizontal, Shield } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import type { UserType } from "../types";
 
 export const UsersPage: React.FC = () => {
   const { data: users, isLoading } = useUsersQuery();
-  const router = useNavigate();
+  const router = useRouter();
 
   const columns: ColumnDef<UserType>[] = [
     {
@@ -64,7 +67,7 @@ export const UsersPage: React.FC = () => {
       header: "Membership",
       cell: ({ row }) => (
         <span className="text-muted-foreground text-xs font-semibold">
-          {row.getValue("membershipType") === "premium" ? "👑 Premium" : "Free"}
+          {row.getValue("membershipType") === "premium" ? "ðŸ‘‘ Premium" : "Free"}
         </span>
       ),
     },
@@ -73,7 +76,7 @@ export const UsersPage: React.FC = () => {
       header: "Coins",
       cell: ({ row }) => (
         <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-          🪙 {row.getValue("coinBalance")}
+          ðŸª™ {row.getValue("coinBalance")}
         </span>
       ),
     },
@@ -108,10 +111,10 @@ export const UsersPage: React.FC = () => {
               className="bg-card border-border w-48 border"
             >
               <DropdownMenuItem className="cursor-pointer rounded-md text-xs font-medium">
-                <Link to={`/users/${u.id}`}>View Account Details</Link>
+                <Link href={`/users/${u.id}`}>View Account Details</Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer rounded-md text-xs font-medium">
-                <Link to={`/users/${u.id}/edit`}>Edit User details</Link>
+                <Link href={`/users/${u.id}/edit`}>Edit User details</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -142,9 +145,9 @@ export const UsersPage: React.FC = () => {
         searchKey="fullName"
         searchPlaceholder="Search users by name..."
         loading={isLoading}
-        onRowClick={(user) => router(`/users/${user.id}`)}
+        onRowClick={(user) => router.push(`/users/${user.id}`)}
         toolbar={
-          <Link to="/users/create">
+          <Link href="/users/create">
             <Button className="flex items-center gap-2">
               <PlusCircle className="h-4 w-4" />
               Add User
@@ -157,3 +160,4 @@ export const UsersPage: React.FC = () => {
 };
 
 export default UsersPage;
+

@@ -1,4 +1,4 @@
-import type { Table } from "@tanstack/react-table";
+﻿import type { Table } from "@tanstack/react-table";
 import { Filter } from "lucide-react";
 
 import { Button } from "../ui/button";
@@ -86,3 +86,4 @@ export function FilterDropdown<TData>({
     </DropdownMenu>
   );
 }
+

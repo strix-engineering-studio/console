@@ -1,4 +1,4 @@
-
+﻿
 export interface IAdminUser {
   id: string; // Firestore doc id (PK)
   email: string;

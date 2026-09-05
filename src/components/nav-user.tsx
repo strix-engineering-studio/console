@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import Link from "next/link";
 import {
   ChevronsUpDownIcon,
   LogOutIcon,
@@ -102,14 +102,14 @@ export function NavUser() {
 
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link to="/profile">
+                <Link href="/profile" className="flex items-center gap-2">
                   <UserCircleIcon className="size-4" />
                   My Profile
                 </Link>
               </DropdownMenuItem>
-
+ 
               <DropdownMenuItem>
-                <Link to="/settings">
+                <Link href="/settings" className="flex items-center gap-2">
                   <Settings2Icon className="size-4" />
                   Settings
                 </Link>
@@ -131,3 +131,4 @@ export function NavUser() {
     </SidebarMenu>
   );
 }
+

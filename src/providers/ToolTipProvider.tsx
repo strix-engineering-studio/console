@@ -1,13 +1,8 @@
-"use client";
+﻿"use client";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { Outlet } from "react-router-dom";
-
-export function ToolTipProvider() {
-  return (
-    <TooltipProvider>
-      <Outlet />
-    </TooltipProvider>
-  );
+export function ToolTipProvider({ children }: { children: React.ReactNode }) {
+  return <TooltipProvider>{children}</TooltipProvider>;
 }
+

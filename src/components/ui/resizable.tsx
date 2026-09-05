@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as ResizablePrimitive from "react-resizable-panels"
 
@@ -48,3 +48,4 @@ function ResizableHandle({
 }
 
 export { ResizableHandle, ResizablePanel, ResizablePanelGroup }
+

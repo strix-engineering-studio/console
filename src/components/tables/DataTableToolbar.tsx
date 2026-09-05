@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import type { Table } from "@tanstack/react-table";
 import { RefreshCw, Search, SlidersHorizontal } from "lucide-react";
 
@@ -23,7 +23,7 @@ export interface DataTableFilter {
   }[];
 }
 
-interface DataTableToolbarProps<TData, _TValue> {
+interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 
   toolbar?: React.ReactNode;
@@ -46,7 +46,7 @@ interface DataTableToolbarProps<TData, _TValue> {
   onSearchChange?: (value: string) => void;
 }
 
-export function DataTableToolbar<TData, TValue>({
+export function DataTableToolbar<TData>({
   table,
 
   toolbar,
@@ -68,7 +68,7 @@ export function DataTableToolbar<TData, TValue>({
   enableFiltering = true,
   filters,
   onSearchChange,
-}: DataTableToolbarProps<TData, TValue>) {
+}: DataTableToolbarProps<TData>) {
   const searchValue = manualSearch
     ? (search ?? "")
     : ((table.getColumn(searchKey ?? "")?.getFilterValue() as string) ?? "");
@@ -157,3 +157,4 @@ export function DataTableToolbar<TData, TValue>({
     </div>
   );
 }
+

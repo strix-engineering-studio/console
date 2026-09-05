@@ -1,4 +1,4 @@
-import { Gender, MembershipType, ThemeMode, UserStatus } from "./users.enums";
+﻿import { Gender, MembershipType, ThemeMode, UserStatus } from "./users.enums";
 
 export interface UserType {
   id: string;

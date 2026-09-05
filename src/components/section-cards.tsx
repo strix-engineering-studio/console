@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -97,3 +97,4 @@ export function SectionCards() {
     </div>
   );
 }
+

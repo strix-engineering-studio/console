@@ -1,4 +1,4 @@
-export class AppError extends Error {
+﻿export class AppError extends Error {
   public code: string;
   public details?: any;
 
@@ -70,3 +70,4 @@ export class FirebaseErrorHandler {
     return new AppError(message, code, error);
   }
 }
+

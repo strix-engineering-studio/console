@@ -1,4 +1,4 @@
-import type { FieldValues, UseFormReturn } from 'react-hook-form';
+﻿import type { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
@@ -60,3 +60,4 @@ export function FormFooter<T extends FieldValues>({
     </>
   );
 }
+

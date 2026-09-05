@@ -1,4 +1,6 @@
-import { useParams } from "react-router-dom";
+﻿"use client";
+
+import { useParams } from "next/navigation";
 
 import {
   Card,
@@ -207,3 +209,4 @@ function Info({ icon, title, value }: Props) {
     </div>
   );
 }
+

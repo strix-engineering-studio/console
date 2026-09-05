@@ -1,4 +1,4 @@
-// collections.ts
+﻿// collections.ts
 
 export const COLLECTIONS = {
     AUTH: 'auth',

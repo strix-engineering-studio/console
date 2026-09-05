@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+﻿import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
 interface DataTableSortIconProps {
   direction: false | "asc" | "desc";
@@ -18,3 +18,4 @@ export function DataTableSortIcon({ direction }: DataTableSortIconProps) {
       );
   }
 }
+

@@ -1,4 +1,4 @@
-// Server Component — no "use client"
+﻿// Server Component â€” no "use client"
 import type { ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -55,3 +55,4 @@ export function PageHeader({
     </div>
   );
 }
+

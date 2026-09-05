@@ -1,3 +1,5 @@
+﻿"use client";
+
 import React, { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -10,7 +12,8 @@ import {
   Sparkles,
   UserRound,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { DataTable } from "@/components/tables/DataTable";
 import { Button } from "@/components/ui/button";
@@ -151,10 +154,10 @@ const INDUSTRIES = [
 
 const EMPLOYEE_RANGES = [
   "Any size",
-  "1–20",
-  "20–50",
-  "50–200",
-  "200–500",
+  "1â€“20",
+  "20â€“50",
+  "50â€“200",
+  "200â€“500",
   "500+",
 ];
 
@@ -254,7 +257,7 @@ function FilterDropdown({
 }
 
 export const LeadsPage: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [activeStatus, setActiveStatus] = useState<FilterStatus>("all");
 
@@ -313,7 +316,7 @@ export const LeadsPage: React.FC = () => {
               </p>
 
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {lead.industry} · {lead.domain}
+                {lead.industry} Â· {lead.domain}
               </p>
             </div>
           </div>
@@ -392,12 +395,12 @@ export const LeadsPage: React.FC = () => {
             />
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => navigate(`/leads/${lead.id}`)}>
+              <DropdownMenuItem onClick={() => router.push(`/leads/${lead.id}`)}>
                 View lead
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() => navigate(`/research?lead=${lead.id}`)}
+                onClick={() => router.push(`/research?lead=${lead.id}`)}
               >
                 Research company
               </DropdownMenuItem>
@@ -424,7 +427,7 @@ export const LeadsPage: React.FC = () => {
           </p>
         </div>
 
-        <Link to="/search">
+        <Link href="/search">
           <Button className="rounded-xl">
             <Search className="size-4" />
             Search Leads
@@ -529,7 +532,7 @@ export const LeadsPage: React.FC = () => {
         searchKey="companyName"
         searchPlaceholder="Search companies..."
         loading={false}
-        onRowClick={(lead) => navigate(`/leads/${lead.id}`)}
+        onRowClick={(lead) => router.push(`/leads/${lead.id}`)}
       />
 
       {/* Empty state */}
@@ -545,7 +548,7 @@ export const LeadsPage: React.FC = () => {
             Try changing your search or filters, or discover new companies.
           </p>
 
-          <Link to="/search">
+          <Link href="/search">
             <Button className="mt-5 rounded-xl">
               <Search className="size-4" />
               Search Leads
@@ -559,16 +562,16 @@ export const LeadsPage: React.FC = () => {
 
 function matchesEmployees(employeeCount: number, range: string): boolean {
   switch (range) {
-    case "1–20":
+    case "1â€“20":
       return employeeCount >= 1 && employeeCount <= 20;
 
-    case "20–50":
+    case "20â€“50":
       return employeeCount > 20 && employeeCount <= 50;
 
-    case "50–200":
+    case "50â€“200":
       return employeeCount > 50 && employeeCount <= 200;
 
-    case "200–500":
+    case "200â€“500":
       return employeeCount > 200 && employeeCount <= 500;
 
     case "500+":
@@ -580,3 +583,4 @@ function matchesEmployees(employeeCount: number, range: string): boolean {
 }
 
 export default LeadsPage;
+

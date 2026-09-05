@@ -1,4 +1,4 @@
-import type { AuthContextType } from "@/providers/AuthProvider";
+﻿import type { AuthContextType } from "@/providers/AuthProvider";
 import { useContext } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 

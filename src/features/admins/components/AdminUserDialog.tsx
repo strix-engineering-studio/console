@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -163,7 +163,7 @@ export function AdminUserDialog({
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   {...field}
                 />
               </div>
@@ -198,3 +198,4 @@ export function AdminUserDialog({
 }
 
 export default AdminUserDialog;
+

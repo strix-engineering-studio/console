@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import usersService from '../services/usersService';
@@ -132,3 +132,4 @@ export const useDeleteUserMutation = () => {
     },
   });
 };
+

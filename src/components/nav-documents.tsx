@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import type { LucideIcon } from 'lucide-react';
 
@@ -44,3 +44,4 @@ export function NavDocuments({
     </SidebarGroup>
   );
 }
+

@@ -1,4 +1,4 @@
-export enum ICommunityType {
+﻿export enum ICommunityType {
     Announcements = 'announcements',
     Family = 'family',
     Homeschooling = 'homeschooling',

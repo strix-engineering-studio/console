@@ -1,4 +1,4 @@
-export default function ProfilePage() {
+﻿export default function ProfilePage() {
   return (
     <div className="container mx-auto max-w-7xl space-y-6 p-6">
       <div>
@@ -11,3 +11,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+

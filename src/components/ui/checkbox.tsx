@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
 
@@ -27,3 +27,4 @@ function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
 }
 
 export { Checkbox }
+
