@@ -1,3 +1,0 @@
-{
-  "/(admin)/workspaces/[id]/edit/page": "app/(admin)/workspaces/[id]/edit/page.js"
-}

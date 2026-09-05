@@ -1,3 +1,0 @@
-module.exports=[86188,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(38478);a.n(d("[project]/node_modules/.pnpm/next@16.3.4_@babel+core@7.2_52bdc2fdd9cde093b3aac8c9b7901c3b/node_modules/next/dist/client/components/builtin/global-error.js"))},18284,a=>{"use strict";var b=a.i(86188);a.n(b)},83281,function(a){a.n(a.i(18284))}];
-
-//# sourceMappingURL=1vpn_next_dist_client_components_builtin_global-error_07wkx01.js.map
