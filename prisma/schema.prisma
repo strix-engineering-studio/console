@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id          String        @id @default(uuid()) @map("_id")
+  name        String
+  slug        String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  users       User[]
+  organizations Organization[]
+  leads       Lead[]
+}
+
+model User {
+  id              String    @id @default(uuid()) @map("_id")
+  fullName        String
+  email           String    @unique
+  mobileNo        String?
+  firebaseUid     String?
+  fcmToken        String?
+  avatar          String?
+  membershipType  String    @default("free")
+  status          String    @default("active")
+  isActive        Boolean   @default(true)
+  isExpert        Boolean   @default(false)
+  dateOfBirth     DateTime?
+  gender          String    @default("other")
+  preferences     Json?
+  children        Json?
+  lastLoginAt     DateTime?
+  lastActiveAt    DateTime?
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id])
+  leads           Lead[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Organization {
+  id          String   @id @default(uuid()) @map("_id")
+  name        String
+  slug        String   @unique
+  website     String?
+  industry    String?
+  location    String?
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  leads       Lead[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lead {
+  id               String         @id @default(uuid()) @map("_id")
+  companyName      String
+  domain           String?
+  industry         String?
+  location         String?
+  employeeCount    Int?
+  status           LeadStatus     @default(NEW)
+  source           String?
+  opportunityScore Int?
+  researchStatus   ResearchStatus @default(PENDING)
+  contactCount     Int            @default(0)
+  workspaceId      String
+  workspace        Workspace      @relation(fields: [workspaceId], references: [id])
+  organizationId   String?
+  organization     Organization?  @relation(fields: [organizationId], references: [id])
+  ownerId          String?
+  owner            User?          @relation(fields: [ownerId], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+enum LeadStatus {
+  NEW
+  RESEARCHING
+  QUALIFIED
+  CONTACTED
+}
+
+enum ResearchStatus {
+  COMPLETE
+  PENDING
+}

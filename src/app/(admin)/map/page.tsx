@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-const MapPage = dynamic(() => import("@/features/map/MapPage"), {
+const MapPage = dynamic(() => import("@/features/leads/pages/MapPage"), {
   ssr: false,
 });
 

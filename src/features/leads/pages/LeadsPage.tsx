@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -154,10 +154,10 @@ const INDUSTRIES = [
 
 const EMPLOYEE_RANGES = [
   "Any size",
-  "1â€“20",
-  "20â€“50",
-  "50â€“200",
-  "200â€“500",
+  "1–20",
+  "20–50",
+  "50–200",
+  "200–500",
   "500+",
 ];
 
@@ -316,7 +316,7 @@ export const LeadsPage: React.FC = () => {
               </p>
 
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {lead.industry} Â· {lead.domain}
+                {lead.industry} · {lead.domain}
               </p>
             </div>
           </div>
@@ -562,16 +562,16 @@ export const LeadsPage: React.FC = () => {
 
 function matchesEmployees(employeeCount: number, range: string): boolean {
   switch (range) {
-    case "1â€“20":
+    case "1–20":
       return employeeCount >= 1 && employeeCount <= 20;
 
-    case "20â€“50":
+    case "20–50":
       return employeeCount > 20 && employeeCount <= 50;
 
-    case "50â€“200":
+    case "50–200":
       return employeeCount > 50 && employeeCount <= 200;
 
-    case "200â€“500":
+    case "200–500":
       return employeeCount > 200 && employeeCount <= 500;
 
     case "500+":

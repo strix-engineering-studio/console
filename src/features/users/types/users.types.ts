@@ -60,16 +60,16 @@ export interface UserFilters {
 
 
 export interface UserCreateData {
-
   fullName: string;
   email: string;
-  mobileNo: string;
-  membershipType: MembershipType;
-  // dateOfBirth: Date;
-  gender: Gender;
-  preferences?: UserPreferences;
-  // children?: UserChild[];
-
+  mobileNo?: string;
+  membershipType?: MembershipType;
+  status?: UserStatus;
+  isActive?: boolean;
+  isExpert?: boolean;
+  gender?: Gender;
+  preferences?: Record<string, unknown> | UserPreferences;
+  children?: UserChild[];
 }
 
 export interface UserUpdateData {

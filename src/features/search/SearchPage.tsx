@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -131,10 +131,10 @@ const INDUSTRIES = [
 
 const EMPLOYEE_RANGES = [
   "Any Size",
-  "1â€“20",
-  "20â€“50",
-  "50â€“200",
-  "200â€“500",
+  "1–20",
+  "20–50",
+  "50–200",
+  "200–500",
   "500+",
 ];
 
@@ -305,7 +305,7 @@ export const SearchLeadsPage: React.FC = () => {
               </p>
 
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {lead.industry} Â· {lead.domain}
+                {lead.industry} · {lead.domain}
               </p>
             </div>
           </div>
@@ -548,13 +548,13 @@ export const SearchLeadsPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>{summary.total} found</span>
 
-              <span>Â·</span>
+              <span>·</span>
 
               <span className="text-emerald-600 dark:text-emerald-400">
                 {summary.new} new
               </span>
 
-              <span>Â·</span>
+              <span>·</span>
 
               <span>{summary.existing} already known</span>
             </div>

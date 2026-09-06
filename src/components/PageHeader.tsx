@@ -1,4 +1,4 @@
-﻿// Server Component â€” no "use client"
+// Server Component — no "use client"
 import type { ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';

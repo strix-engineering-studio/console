@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { Building2, Search, X } from "lucide-react";
@@ -256,7 +256,7 @@ export default function MapPage() {
                   <p className="font-semibold">{lead.companyName}</p>
 
                   <p className="mt-1 text-xs text-gray-500">
-                    {lead.industry} Â· {lead.location}
+                    {lead.industry} · {lead.location}
                   </p>
 
                   <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
@@ -442,7 +442,7 @@ function LeadPanel({ lead, onClose }: { lead: Lead; onClose: () => void }) {
             </h2>
 
             <p className="mt-1 text-xs text-muted-foreground">
-              {lead.industry} Â· {lead.location}
+              {lead.industry} · {lead.location}
             </p>
           </div>
         </div>

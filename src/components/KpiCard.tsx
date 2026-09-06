@@ -1,4 +1,4 @@
-﻿// Server Component â€” no "use client"
+// Server Component — no "use client"
 import type { ElementType } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
