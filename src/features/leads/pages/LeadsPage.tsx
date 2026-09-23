@@ -8,6 +8,7 @@ import {
   ChevronDown,
   MapPin,
   MoreHorizontal,
+  Plus,
   Search,
   Sparkles,
   UserRound,
@@ -16,7 +17,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { DataTable } from "@/components/tables/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -28,6 +37,8 @@ import {
 
 type LeadType = {
   id: string;
+  organizationLeadId: string;
+  personalLeadId: string;
   companyName: string;
   domain: string;
   industry: string;
@@ -51,6 +62,8 @@ type FilterStatus = "all" | LeadStatus;
 const MOCK_LEADS: Lead[] = [
   {
     id: "1",
+    organizationLeadId: "ORG-LEAD-0001",
+    personalLeadId: "PERSONAL-LEAD-0001",
     companyName: "Acme Technologies",
     domain: "acme.com",
     industry: "FinTech",
@@ -64,6 +77,8 @@ const MOCK_LEADS: Lead[] = [
   },
   {
     id: "2",
+    organizationLeadId: "ORG-LEAD-0002",
+    personalLeadId: "PERSONAL-LEAD-0002",
     companyName: "Finly",
     domain: "finly.com",
     industry: "FinTech",
@@ -77,6 +92,8 @@ const MOCK_LEADS: Lead[] = [
   },
   {
     id: "3",
+    organizationLeadId: "ORG-LEAD-0003",
+    personalLeadId: "PERSONAL-LEAD-0003",
     companyName: "Orbit Technologies",
     domain: "orbit.com",
     industry: "SaaS",
@@ -90,6 +107,8 @@ const MOCK_LEADS: Lead[] = [
   },
   {
     id: "4",
+    organizationLeadId: "ORG-LEAD-0004",
+    personalLeadId: "PERSONAL-LEAD-0004",
     companyName: "Nova Systems",
     domain: "nova.com",
     industry: "Software",
@@ -103,6 +122,8 @@ const MOCK_LEADS: Lead[] = [
   },
   {
     id: "5",
+    organizationLeadId: "ORG-LEAD-0005",
+    personalLeadId: "PERSONAL-LEAD-0005",
     companyName: "TechFlow",
     domain: "techflow.com",
     industry: "Software",
@@ -160,6 +181,17 @@ const EMPLOYEE_RANGES = [
   "200–500",
   "500+",
 ];
+
+const MANUAL_LEAD_DEFAULTS = {
+  organizationLeadId: "",
+  personalLeadId: "",
+  companyName: "",
+  domain: "",
+  industry: "",
+  location: "",
+  employeeCount: "",
+  status: "new" as LeadStatus,
+};
 
 function StatusBadge({ status }: { status: LeadStatus }) {
   const config: Record<
@@ -226,14 +258,18 @@ function FilterDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="outline"
-            className="h-10 min-w-36 justify-between rounded-xl px-3 text-sm font-normal"
+          <button
+            type="button"
+            className={buttonVariants({
+              variant: "outline",
+              className:
+                "h-10 min-w-36 justify-between rounded-xl px-3 text-sm font-normal",
+            })}
           >
             <span className="truncate">{value}</span>
 
             <ChevronDown className="ml-2 size-3.5 shrink-0 text-muted-foreground" />
-          </Button>
+          </button>
         }
       />
 
@@ -256,6 +292,270 @@ function FilterDropdown({
   );
 }
 
+function ManualLeadDialog({
+  open,
+  onOpenChange,
+  onCreated,
+  existingLeads,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreated: (lead: Lead) => void;
+  existingLeads: Lead[];
+}) {
+  const [form, setForm] = useState(MANUAL_LEAD_DEFAULTS);
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setForm(MANUAL_LEAD_DEFAULTS);
+      setError("");
+    }
+    onOpenChange(nextOpen);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const employeeCount = Number(form.employeeCount);
+    const organizationLeadId = form.organizationLeadId.trim();
+    const personalLeadId = form.personalLeadId.trim();
+    const hasDuplicateId = existingLeads.some(
+      (lead) =>
+        lead.organizationLeadId === organizationLeadId ||
+        lead.personalLeadId === personalLeadId,
+    );
+
+    if (
+      !organizationLeadId ||
+      !personalLeadId ||
+      !form.companyName.trim() ||
+      !form.domain.trim() ||
+      !form.industry.trim() ||
+      !form.location.trim() ||
+      !Number.isInteger(employeeCount) ||
+      employeeCount < 0 ||
+      hasDuplicateId
+    ) {
+      setError(
+        hasDuplicateId
+          ? "Organization and personal lead IDs must be unique."
+          : "Complete all fields with valid values.",
+      );
+      return;
+    }
+
+    setIsSaving(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          organizationLeadId,
+          personalLeadId,
+          companyName: form.companyName.trim(),
+          domain: form.domain.trim(),
+          industry: form.industry.trim(),
+          location: form.location.trim(),
+          employeeCount,
+          status: form.status.toUpperCase(),
+          researchStatus: "pending",
+          source: "Manual",
+          opportunityScore: 0,
+          contactCount: 0,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Lead creation failed with status ${response.status}.`);
+      }
+
+      const result = (await response.json()) as { data?: Partial<Lead> };
+      const createdLead: Lead = {
+        id: result.data?.id ?? crypto.randomUUID(),
+        organizationLeadId,
+        personalLeadId,
+        companyName: form.companyName.trim(),
+        domain: form.domain.trim(),
+        industry: form.industry.trim(),
+        location: form.location.trim(),
+        employeeCount,
+        status: form.status,
+        researchStatus: "pending",
+        source: "Manual",
+        opportunityScore: 0,
+        contactCount: 0,
+      };
+
+      onCreated(createdLead);
+      handleOpenChange(false);
+    } catch (submitError) {
+      console.error(submitError);
+      setError("Unable to add this lead. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Add manual lead</DialogTitle>
+          <DialogDescription>
+            Add a company to your workspace without running a search.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Organization lead ID *</span>
+              <Input
+                value={form.organizationLeadId}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    organizationLeadId: event.target.value,
+                  }))
+                }
+                placeholder="ORG-LEAD-0006"
+              />
+            </label>
+
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Personal lead ID *</span>
+              <Input
+                value={form.personalLeadId}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    personalLeadId: event.target.value,
+                  }))
+                }
+                placeholder="PERSONAL-LEAD-0006"
+              />
+            </label>
+
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Company name *</span>
+              <Input
+                value={form.companyName}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    companyName: event.target.value,
+                  }))
+                }
+                placeholder="Acme Technologies"
+              />
+            </label>
+
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Domain *</span>
+              <Input
+                value={form.domain}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    domain: event.target.value,
+                  }))
+                }
+                placeholder="acme.com"
+              />
+            </label>
+
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Industry *</span>
+              <Input
+                value={form.industry}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    industry: event.target.value,
+                  }))
+                }
+                placeholder="SaaS"
+              />
+            </label>
+
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Location *</span>
+              <Input
+                value={form.location}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    location: event.target.value,
+                  }))
+                }
+                placeholder="Pune"
+              />
+            </label>
+
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Employees *</span>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={form.employeeCount}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    employeeCount: event.target.value,
+                  }))
+                }
+                placeholder="50"
+              />
+            </label>
+
+            <label className="space-y-1.5">
+              <span className="text-xs font-medium">Status</span>
+              <select
+                value={form.status}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    status: event.target.value as LeadStatus,
+                  }))
+                }
+                className="border-input bg-background h-8 w-full rounded-none border px-2 text-xs outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
+              >
+                {STATUS_FILTERS.filter((filter) => filter.value !== "all").map(
+                  (filter) => (
+                    <option key={filter.value} value={filter.value}>
+                      {filter.label}
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+          </div>
+
+          {error && <p className="text-xs text-destructive">{error}</p>}
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSaving}
+              onClick={() => handleOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? "Adding..." : "Add lead"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export const LeadsPage: React.FC = () => {
   const router = useRouter();
 
@@ -266,11 +566,13 @@ export const LeadsPage: React.FC = () => {
   const [industry, setIndustry] = useState("All industries");
 
   const [employeeRange, setEmployeeRange] = useState("Any size");
+  const [leads, setLeads] = useState<Lead[]>(MOCK_LEADS);
+  const [isManualLeadOpen, setIsManualLeadOpen] = useState(false);
 
   const filteredLeads = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return MOCK_LEADS.filter((lead) => {
+    return leads.filter((lead) => {
       const matchesStatus =
         activeStatus === "all" || lead.status === activeStatus;
 
@@ -294,11 +596,11 @@ export const LeadsPage: React.FC = () => {
         matchesEmployeeRange
       );
     });
-  }, [activeStatus, search, industry, employeeRange]);
+  }, [activeStatus, search, industry, employeeRange, leads]);
 
   const columns: ColumnDef<Lead>[] = [
     {
-      id: "company",
+      id: "companyName",
       header: "Company",
       accessorKey: "companyName",
       cell: ({ row }) => {
@@ -317,6 +619,10 @@ export const LeadsPage: React.FC = () => {
 
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {lead.industry} · {lead.domain}
+              </p>
+
+              <p className="mt-1 truncate text-[10px] text-muted-foreground">
+                Org: {lead.organizationLeadId} · Personal: {lead.personalLeadId}
               </p>
             </div>
           </div>
@@ -383,14 +689,17 @@ export const LeadsPage: React.FC = () => {
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-lg"
+                <button
+                  type="button"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "icon",
+                    className: "size-8 rounded-lg",
+                  })}
                   onClick={(event) => event.stopPropagation()}
                 >
                   <MoreHorizontal className="size-4" />
-                </Button>
+                </button>
               }
             />
 
@@ -423,16 +732,25 @@ export const LeadsPage: React.FC = () => {
           <h1 className="text-3xl font-semibold tracking-tight">Leads</h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            {MOCK_LEADS.length} companies in your Strix workspace.
+            {leads.length} companies in your Strix workspace.
           </p>
         </div>
 
-        <Link href="/search">
-          <Button className="rounded-xl">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            className="rounded-xl"
+            onClick={() => setIsManualLeadOpen(true)}
+          >
+            <Plus className="size-4" />
+            Add manual lead
+          </Button>
+          <Link href="/search">
+            <Button variant="outline" className="rounded-xl">
             <Search className="size-4" />
             Search Leads
-          </Button>
-        </Link>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Status tabs */}
@@ -442,8 +760,8 @@ export const LeadsPage: React.FC = () => {
 
           const count =
             filter.value === "all"
-              ? MOCK_LEADS.length
-              : MOCK_LEADS.filter((lead) => lead.status === filter.value)
+              ? leads.length
+              : leads.filter((lead) => lead.status === filter.value)
                   .length;
 
           return (
@@ -531,6 +849,7 @@ export const LeadsPage: React.FC = () => {
         data={filteredLeads}
         searchKey="companyName"
         searchPlaceholder="Search companies..."
+        enableSearch={false}
         loading={false}
         onRowClick={(lead) => router.push(`/leads/${lead.id}`)}
       />
@@ -556,6 +875,13 @@ export const LeadsPage: React.FC = () => {
           </Link>
         </div>
       )}
+
+      <ManualLeadDialog
+        open={isManualLeadOpen}
+        onOpenChange={setIsManualLeadOpen}
+        existingLeads={leads}
+        onCreated={(lead) => setLeads((current) => [lead, ...current])}
+      />
     </div>
   );
 };
@@ -583,4 +909,3 @@ function matchesEmployees(employeeCount: number, range: string): boolean {
 }
 
 export default LeadsPage;
-

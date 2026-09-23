@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/tables/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import {
   DropdownMenu,
@@ -81,11 +81,16 @@ export const AdminUsersPage: React.FC = () => {
 
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  className={buttonVariants({ variant: "ghost", size: "icon" })}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              }
+            />
 
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => handleEdit(admin)}>
@@ -153,4 +158,3 @@ export const AdminUsersPage: React.FC = () => {
 };
 
 export default AdminUsersPage;
-

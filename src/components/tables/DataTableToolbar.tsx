@@ -2,7 +2,7 @@
 import type { Table } from "@tanstack/react-table";
 import { RefreshCw, Search, SlidersHorizontal } from "lucide-react";
 
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { Input } from "../ui/input";
 
 import {
@@ -69,9 +69,13 @@ export function DataTableToolbar<TData>({
   filters,
   onSearchChange,
 }: DataTableToolbarProps<TData>) {
+  const searchColumn = enableSearch && searchKey
+    ? table.getAllLeafColumns().find((column) => column.id === searchKey)
+    : undefined;
+
   const searchValue = manualSearch
     ? (search ?? "")
-    : ((table.getColumn(searchKey ?? "")?.getFilterValue() as string) ?? "");
+    : ((searchColumn?.getFilterValue() as string) ?? "");
 
   const handleSearch = (value: string) => {
     if (manualSearch) {
@@ -81,7 +85,7 @@ export function DataTableToolbar<TData>({
 
     if (!searchKey) return;
 
-    table.getColumn(searchKey)?.setFilterValue(value);
+    searchColumn?.setFilterValue(value);
   };
 
   return (
@@ -124,12 +128,17 @@ export function DataTableToolbar<TData>({
         )}
         {enableColumnVisibility && (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="outline">
-                <SlidersHorizontal className="mr-2 h-4 w-4" />
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  <SlidersHorizontal className="mr-2 h-4 w-4" />
+                  Columns
+                </button>
+              }
+            />
 
             <DropdownMenuContent align="end" className="w-56">
               {table
@@ -157,4 +166,3 @@ export function DataTableToolbar<TData>({
     </div>
   );
 }
-

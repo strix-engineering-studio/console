@@ -1,7 +1,7 @@
 ﻿import type { Table } from "@tanstack/react-table";
 import { Filter } from "lucide-react";
 
-import { Button } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,14 +35,22 @@ export function FilterDropdown<TData>({
   table,
   filters,
 }: FilterDropdownProps<TData>) {
+  const getFilterColumn = (key: string) =>
+    table.getAllLeafColumns().find((column) => column.id === key);
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="outline">
-          <Filter className="mr-2 h-4 w-4" />
-          Filters
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            <Filter className="mr-2 h-4 w-4" />
+            Filters
+          </button>
+        }
+      />
 
       <DropdownMenuContent className="w-72 p-4" align="end">
         <div className="space-y-4">
@@ -54,13 +62,13 @@ export function FilterDropdown<TData>({
 
               <Select
                 value={
-                  (table.getColumn(filter.key)?.getFilterValue() as string) ??
+                  (getFilterColumn(filter.key)?.getFilterValue() as string) ??
                   ""
                 }
                 onValueChange={(value) =>
-                  table
-                    .getColumn(filter.key)
-                    ?.setFilterValue(value === "ALL" ? undefined : value)
+                  getFilterColumn(filter.key)?.setFilterValue(
+                    value === "ALL" ? undefined : value,
+                  )
                 }
               >
                 <SelectTrigger>
@@ -86,4 +94,3 @@ export function FilterDropdown<TData>({
     </DropdownMenu>
   );
 }
-

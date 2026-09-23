@@ -8,7 +8,7 @@ import {
   useDeleteCommunityMutation,
 } from "../hooks/useCommunity";
 import { DataTable } from "@/components/tables/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -201,11 +201,16 @@ export const OrganizationsPage: React.FC = () => {
 
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  className={buttonVariants({ variant: "ghost", size: "icon" })}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              }
+            />
 
             <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuItem>
@@ -396,4 +401,3 @@ export const OrganizationsPage: React.FC = () => {
 };
 
 export default OrganizationsPage;
-

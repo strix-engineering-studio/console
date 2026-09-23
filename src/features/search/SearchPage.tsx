@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 
 import { DataTable } from "@/components/tables/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -158,13 +158,17 @@ function FilterDropdown({
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button
-              variant="outline"
-              className="h-10 w-full justify-between rounded-xl px-3 text-sm font-normal"
+            <button
+              type="button"
+              className={buttonVariants({
+                variant: "outline",
+                className:
+                  "h-10 w-full justify-between rounded-xl px-3 text-sm font-normal",
+              })}
             >
               <span className="truncate">{value}</span>
               <ChevronDown className="ml-2 size-3.5 shrink-0 text-muted-foreground" />
-            </Button>
+            </button>
           }
         />
 
@@ -287,7 +291,7 @@ export const SearchLeadsPage: React.FC = () => {
 
   const columns: ColumnDef<LeadType>[] = [
     {
-      id: "company",
+      id: "companyName",
       header: "Company",
       accessorKey: "companyName",
       cell: ({ row }) => {
@@ -621,4 +625,3 @@ export const SearchLeadsPage: React.FC = () => {
 };
 
 export default SearchLeadsPage;
-

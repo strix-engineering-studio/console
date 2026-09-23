@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -15,7 +15,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,6 +108,11 @@ function getInitials(name?: string | null) {
  */
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const options = [
     {
@@ -131,15 +136,18 @@ function ThemeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground size-8"
+          <button
+            type="button"
+            className={buttonVariants({
+              variant: "ghost",
+              size: "icon",
+              className: "text-muted-foreground hover:text-foreground size-8",
+            })}
             aria-label="Change appearance"
           >
             <SunIcon className="size-4 scale-100 rotate-0 transition-transform dark:scale-0 dark:-rotate-90" />
             <MoonIcon className="absolute size-4 scale-0 rotate-90 transition-transform dark:scale-100 dark:rotate-0" />
-          </Button>
+          </button>
         }
       />
 
@@ -160,7 +168,9 @@ function ThemeToggle() {
 
             {label}
 
-            {theme === value && <CheckIcon className="ml-auto size-3.5" />}
+            {mounted && theme === value && (
+              <CheckIcon className="ml-auto size-3.5" />
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -202,10 +212,14 @@ function SignalsButton() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground relative size-8"
+          <button
+            type="button"
+            className={buttonVariants({
+              variant: "ghost",
+              size: "icon",
+              className:
+                "text-muted-foreground hover:text-foreground relative size-8",
+            })}
             aria-label="View signals"
           >
             <BellIcon className="size-4" />
@@ -230,7 +244,7 @@ function SignalsButton() {
                 {unread > 9 ? "9+" : unread}
               </span>
             )}
-          </Button>
+          </button>
         }
       />
 
@@ -312,9 +326,12 @@ function UserQuickMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            variant="ghost"
-            className="h-8 gap-2 px-2"
+          <button
+            type="button"
+            className={buttonVariants({
+              variant: "ghost",
+              className: "h-8 gap-2 px-2",
+            })}
             aria-label="Open account menu"
           >
             <Avatar className="size-7 rounded-md">
@@ -322,7 +339,7 @@ function UserQuickMenu() {
                 {getInitials(user.fullName)}
               </AvatarFallback>
             </Avatar>
-          </Button>
+          </button>
         }
       />
 
@@ -507,4 +524,3 @@ export function SiteHeader() {
     </header>
   );
 }
-

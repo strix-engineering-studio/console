@@ -59,6 +59,8 @@ model Organization {
 
 model Lead {
   id               String         @id @default(uuid()) @map("_id")
+  organizationLeadId String       @default(uuid())
+  personalLeadId     String       @default(uuid())
   companyName      String
   domain           String?
   industry         String?
@@ -69,6 +71,10 @@ model Lead {
   opportunityScore Int?
   researchStatus   ResearchStatus @default(PENDING)
   contactCount     Int            @default(0)
+  priority         LeadPriority   @default(MEDIUM)
+  notes            String?
+  lastContactedAt  DateTime?
+  deletedAt        DateTime?
   workspaceId      String
   workspace        Workspace      @relation(fields: [workspaceId], references: [id])
   organizationId   String?
@@ -77,6 +83,11 @@ model Lead {
   owner            User?          @relation(fields: [ownerId], references: [id])
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+
+  @@unique([workspaceId, organizationLeadId])
+  @@unique([workspaceId, personalLeadId])
+  @@index([workspaceId, status, createdAt])
+  @@index([workspaceId, priority, createdAt])
 }
 
 enum LeadStatus {
@@ -89,4 +100,11 @@ enum LeadStatus {
 enum ResearchStatus {
   COMPLETE
   PENDING
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }

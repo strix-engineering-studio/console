@@ -4,7 +4,7 @@ import React from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useUsersQuery } from "../hooks/useUsers";
 import { DataTable } from "@/components/tables/DataTable";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import {
   DropdownMenu,
@@ -97,15 +97,20 @@ export const UsersPage: React.FC = () => {
         const u = row.original;
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="border-border/20 h-8 w-8 rounded-lg border"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "icon",
+                    className: "border-border/20 h-8 w-8 rounded-lg border",
+                  })}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              }
+            />
             <DropdownMenuContent
               align="end"
               className="bg-card border-border w-48 border"
@@ -160,4 +165,3 @@ export const UsersPage: React.FC = () => {
 };
 
 export default UsersPage;
-

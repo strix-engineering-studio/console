@@ -48,26 +48,27 @@ export function NavUser() {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <SidebarMenuButton
-              size="lg"
-              tooltip={displayName}
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
-                {/* <AvatarImage src={user.d ?? undefined} alt={displayName ?? ''} /> */}
-                <AvatarFallback className="rounded-lg">
-                  {getInitials(displayName)}
-                </AvatarFallback>
-              </Avatar>
+          <DropdownMenuTrigger
+            render={
+              <SidebarMenuButton
+                size="lg"
+                tooltip={displayName}
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarFallback className="rounded-lg">
+                    {getInitials(displayName)}
+                  </AvatarFallback>
+                </Avatar>
 
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{displayName}</span>
-              </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{displayName}</span>
+                </div>
 
-              <ChevronsUpDownIcon className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
+                <ChevronsUpDownIcon className="ml-auto size-4" />
+              </SidebarMenuButton>
+            }
+          />
 
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
@@ -131,4 +132,3 @@ export function NavUser() {
     </SidebarMenu>
   );
 }
-
