@@ -1,0 +1,1 @@
+export type Organization = { id: string; name: string; website?: string | null; industry?: string | null; location?: string | null; city?: string | null; country?: string | null; linkedinUrl?: string | null; _count?: { people: number; leads: number } };

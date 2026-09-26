@@ -1,1 +1,2 @@
-export { default } from "@/features/leads/pages/LeadsPage";
+import { LeadsPage } from "@/features/leads";
+export default function Page() { return <LeadsPage />; }

@@ -1,130 +1,14 @@
 "use client";
-
 import Link from "next/link";
-import { ArrowLeft, Building2, Copy, MapPin } from "lucide-react";
-import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useLeadQuery } from "../hooks/useLeads";
-
+import { useLead } from "../services/leads.queries";
+type Detail = { id: string; name: string; status: string; source: string; notes: string | null; organization?: { name: string; industry: string | null; location: string | null; city: string | null } | null; person?: { name: string; title: string | null; email: string | null } | null; research: { id: string; status: string; summary: string | null }[]; activities: { id: string; title: string; createdAt: string }[] };
 export default function LeadDetailsPage({ id }: { id: string }) {
-  const { data: lead, isLoading, isError } = useLeadQuery(id);
-
-  const copyId = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    toast.success("Lead identifier copied");
-  };
-
-  if (isLoading) {
-    return <div className="p-6 text-sm text-muted-foreground">Loading lead...</div>;
-  }
-
-  if (isError || !lead) {
-    return (
-      <div className="space-y-4 p-6">
-        <p className="text-sm text-destructive">Unable to load this lead.</p>
-        <Link href="/leads">
-          <Button variant="outline">Back to leads</Button>
-        </Link>
-      </div>
-    );
-  }
-
-  return (
-    <div className="animate-fade-in space-y-6 p-6">
-      <Link href="/leads">
-        <Button variant="ghost" className="px-0">
-          <ArrowLeft className="size-4" />
-          Back to leads
-        </Button>
-      </Link>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-lg border bg-muted/40">
-              <Building2 className="size-5 text-muted-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold">{lead.companyName}</h1>
-              <p className="text-sm text-muted-foreground">
-                {lead.industry ?? "Unspecified industry"} ·{" "}
-                {lead.domain ?? "No domain"}
-              </p>
-            </div>
-          </div>
-        </div>
-        <span className="rounded-md bg-muted px-2 py-1 text-xs font-medium">
-          {lead.status}
-        </span>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Lead identifiers</CardTitle>
-            <CardDescription>
-              Use these identifiers to track the organizational and personal
-              lead records.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              ["Organization lead ID", lead.organizationLeadId],
-              ["Personal lead ID", lead.personalLeadId],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"
-              >
-                <div>
-                  <p className="text-xs text-muted-foreground">{label}</p>
-                  <p className="font-mono text-sm">{value}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => copyId(value)}
-                  aria-label={`Copy ${label}`}
-                >
-                  <Copy className="size-4" />
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Organization details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <MapPin className="size-4" />
-              {lead.location ?? "Location not provided"}
-            </div>
-            <p>
-              <span className="text-muted-foreground">Employees:</span>{" "}
-              {lead.employeeCount ?? "Not provided"}
-            </p>
-            <p>
-              <span className="text-muted-foreground">Priority:</span>{" "}
-              {lead.priority}
-            </p>
-            <p>
-              <span className="text-muted-foreground">Source:</span>{" "}
-              {lead.source ?? "Not provided"}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+  const query = useLead(id);
+  const lead = query.data as unknown as Detail | undefined;
+  if (query.isPending) return <p className="text-sm text-muted-foreground">Loading lead…</p>;
+  if (query.isError || !lead) return <p role="alert" className="text-sm text-destructive">{query.error?.message || "Lead not found."}</p>;
+  return <section><Link href="/leads" className="text-sm text-primary hover:underline">← Leads</Link><div className="mt-5 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-muted-foreground">{lead.status} · {lead.source}</p><Link href={`/leads/${id}/edit`} target="_blank" className="rounded-lg border px-3 py-2 text-sm">Edit lead</Link></div><h1 className="mt-1 text-3xl font-semibold">{lead.name}</h1>{lead.notes && <p className="mt-4 max-w-3xl whitespace-pre-wrap text-sm leading-6">{lead.notes}</p>}
+    <div className="mt-6 grid gap-4 md:grid-cols-2"><div className="rounded-xl border p-5"><h2 className="font-semibold">Organization</h2><p className="mt-3">{lead.organization?.name || "No organization linked."}</p>{lead.organization && <p className="mt-1 text-sm text-muted-foreground">{lead.organization.industry || "Industry not provided"} · {lead.organization.location || lead.organization.city || "Location not provided"}</p>}</div><div className="rounded-xl border p-5"><h2 className="font-semibold">Person</h2><p className="mt-3">{lead.person?.name || "No person linked."}</p>{lead.person && <p className="mt-1 text-sm text-muted-foreground">{lead.person.title || "Title not provided"} · {lead.person.email || "No email"}</p>}</div></div>
+    <div className="mt-6 grid gap-4 md:grid-cols-2"><div className="rounded-xl border p-5"><h2 className="font-semibold">Research</h2>{lead.research.length ? lead.research.map(r => <p key={r.id} className="mt-3 text-sm">{r.status} · {r.summary || "No summary recorded"}</p>) : <p className="mt-3 text-sm text-muted-foreground">No research has been run for this lead.</p>}</div><div className="rounded-xl border p-5"><h2 className="font-semibold">Recent activity</h2>{lead.activities.length ? lead.activities.map(a => <p key={a.id} className="mt-3 text-sm">{a.title} · {new Date(a.createdAt).toLocaleString()}</p>) : <p className="mt-3 text-sm text-muted-foreground">No activity recorded.</p>}</div></div>
+  </section>;
 }

@@ -1,35 +1,57 @@
-﻿
-// import { jwtDecode } from "jwt-decode";
+import "server-only";
+import { createHmac, timingSafeEqual } from "node:crypto";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-// export const SESSION_COOKIE_NAME = '__session';
+export const SESSION_COOKIE = "strix_lead_session";
+const SESSION_SECONDS = 60 * 60 * 24 * 7;
 
-// /**
-//  * Retrieves the session token from the cookie store.
-//  * @returns The session token string, or null if not found.
-//  */
-// export async function getSessionToken(): Promise<string | null> {
-//   const cookieStore = localStorage.getItem('cookieStore') ? Promise.resolve(JSON.parse(localStorage.getItem('cookieStore')!)) : Promise.resolve(null);
-//   return (await cookieStore)?.[SESSION_COOKIE_NAME]?.value || null;
-// }
-// /**
-//  * Verifies the session token against Firebase Admin SDK.
-//  * @returns The user's UID if the session is valid, or null otherwise.
-//  */
-// export async function verifySession(): Promise<string | null> {
-//   const token = await getSessionToken();
-//   if (!token) return null;
+function signature(value: string) {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) throw new Error("SESSION_SECRET must be configured.");
+  return createHmac("sha256", secret).update(value).digest("base64url");
+}
 
-//   try {
-//     // Assuming adminAuth.verifySessionCookie returns a structure containing the user ID (UID)
-//     const decodedToken = await jwtDecode(token);
-//     return decodedToken?.sub || null; // Return UID if available
-//   } catch (error) {
-//     console.warn(
-//       'Firebase session verification failed:',
-//       error instanceof Error ? error.message : String(error)
-//     );
-//     // Log the failure but return null to allow graceful fallback
-//     return null;
-//   }
-// }
+export function createSessionToken(adminId: string) {
+  const payload = Buffer.from(JSON.stringify({
+    sub: adminId,
+    exp: Math.floor(Date.now() / 1000) + SESSION_SECONDS,
+  })).toString("base64url");
+  return `${payload}.${signature(payload)}`;
+}
 
+export function verifySessionToken(token?: string | null): { adminId: string } | null {
+  if (!token) return null;
+  const [payload, supplied] = token.split(".");
+  if (!payload || !supplied) return null;
+  const expected = signature(payload);
+  const a = Buffer.from(supplied);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+  try {
+    const value = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as { sub?: string; exp?: number };
+    if (!value.sub || !value.exp || value.exp <= Date.now() / 1000) return null;
+    return { adminId: value.sub };
+  } catch {
+    return null;
+  }
+}
+
+export async function getAdminSession() {
+  const jar = await cookies();
+  return verifySessionToken(jar.get(SESSION_COOKIE)?.value);
+}
+
+export async function requireAdmin() {
+  const session = await getAdminSession();
+  if (!session) redirect("/auth/login");
+  return session;
+}
+
+export const sessionCookieOptions = {
+  httpOnly: true,
+  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+  maxAge: SESSION_SECONDS,
+};

@@ -1,0 +1,1 @@
+export type ResearchRun = { id: string; status: string; provider?: string | null; startedAt: string; summary?: string | null; lead?: { name: string } | null; organization?: { name: string } | null; person?: { name: string } | null };

@@ -1,1 +1,1 @@
-export * from "./leads.types";
+export * from "./lead.types";

@@ -1,110 +1,19 @@
 import { NextResponse } from "next/server";
-
+import { isApiAdmin } from "@/lib/auth/api-session";
 import { leadRepository } from "@/features/leads/repositories/lead.repository";
-import { updateLeadSchema } from "@/features/leads/schemas";
+import { leadSchema } from "@/features/leads/schemas";
 
-type RouteContext = { params: Promise<{ id: string }> };
-
-export async function GET(_: Request, context: RouteContext) {
-  const { id } = await context.params;
-  const lead = await leadRepository.findById(id);
-
-  if (!lead) {
-    return NextResponse.json(
-      {
-        success: false,
-        code: "LEAD_NOT_FOUND",
-        message: "Lead not found.",
-        data: null,
-      },
-      { status: 404 },
-    );
-  }
-
-  return NextResponse.json({
-    success: true,
-    code: "LEAD_FETCHED",
-    message: "Lead fetched successfully.",
-    data: lead,
-  });
+type Context = { params: Promise<{ id: string }> };
+export async function GET(_request: Request, { params }: Context) {
+  if (!await isApiAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { id } = await params;
+  const data = await leadRepository.findById(id);
+  return data ? NextResponse.json({ data }) : NextResponse.json({ error: "Lead not found." }, { status: 404 });
 }
-
-export async function PATCH(request: Request, context: RouteContext) {
-  const { id } = await context.params;
-  const parsed = updateLeadSchema.safeParse(
-    await request.json().catch(() => null),
-  );
-
-  if (!parsed.success) {
-    return NextResponse.json(
-      {
-        success: false,
-        code: "VALIDATION_ERROR",
-        message: "Lead validation failed.",
-        data: null,
-        errors: parsed.error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          message: issue.message,
-        })),
-      },
-      { status: 400 },
-    );
-  }
-
-  try {
-    const lead = await leadRepository.update(id, parsed.data);
-    if (!lead) {
-      return NextResponse.json(
-        {
-          success: false,
-          code: "LEAD_NOT_FOUND",
-          message: "Lead not found.",
-          data: null,
-        },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      code: "LEAD_UPDATED",
-      message: "Lead updated successfully.",
-      data: lead,
-    });
-  } catch (error) {
-    console.error("[Leads API] update failed", error);
-    return NextResponse.json(
-      {
-        success: false,
-        code: "LEAD_UPDATE_ERROR",
-        message: "Unable to update lead.",
-        data: null,
-      },
-      { status: 500 },
-    );
-  }
-}
-
-export async function DELETE(_: Request, context: RouteContext) {
-  const { id } = await context.params;
-  const archived = await leadRepository.archive(id);
-
-  if (!archived) {
-    return NextResponse.json(
-      {
-        success: false,
-        code: "LEAD_NOT_FOUND",
-        message: "Lead not found.",
-        data: null,
-      },
-      { status: 404 },
-    );
-  }
-
-  return NextResponse.json({
-    success: true,
-    code: "LEAD_ARCHIVED",
-    message: "Lead archived successfully.",
-    data: null,
-  });
+export async function PATCH(request: Request, { params }: Context) {
+  if (!await isApiAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const parsed = leadSchema.partial().safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: "Invalid lead details.", issues: parsed.error.flatten() }, { status: 400 });
+  try { return NextResponse.json({ data: await leadRepository.update((await params).id, parsed.data) }); }
+  catch { return NextResponse.json({ error: "Lead not found." }, { status: 404 }); }
 }

@@ -1,1 +1,1 @@
-﻿export * from './community.types';
+export * from "./organization.types";

@@ -1,8 +1,3 @@
-﻿import zod from "zod";
-
-export const loginSchema = zod.object({
-    email: zod.string().email('Enter a valid email'),
-    password: zod.string().min(6, 'Password must be at least 6 characters'),
-});
-
-export type LoginFormValues = zod.infer<typeof loginSchema>;
+import { z } from "zod";
+export const loginSchema = z.object({ email: z.string().email().max(254), password: z.string().min(1).max(1024) });
+export type LoginInput = z.infer<typeof loginSchema>;

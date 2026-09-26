@@ -1,142 +1,39 @@
-﻿"use client";
+"use client";
 
-import React from "react";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { toast } from "sonner";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Mail, Lock } from "lucide-react";
-
-import { type LoginFormValues, loginSchema } from "../schemas/auth.schema";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../hooks/useAuth";
+import { useLogin } from "../services/auth.mutations";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const login = useLogin();
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  const onSubmit = async (data: LoginFormValues) => {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
     try {
-      setIsSubmitting(true);
-
-      await login(data.email, data.password);
-
-      toast.success("Login successful");
-
-      router.push("/");
-    } catch (error: unknown) {
-      const err = error as Error;
-      toast.error(err?.message || "Login failed");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+      await login.mutateAsync({ email: String(form.get("email") ?? ""), password: String(form.get("password") ?? "") });
+      router.replace("/dashboard");
+      router.refresh();
+    } catch { /* The mutation exposes the error state below. */ }
+  }
 
   return (
-    <Card className="w-96">
-      <CardHeader className="space-y-4 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border">
-          <img
-            src="/imrabo-logo-512x512.png"
-            alt="Logo"
-            width={50}
-            height={50}
-            className="h-6 w-6"
-          />
-        </div>
-
-        <CardTitle className="text-2xl">Sign In</CardTitle>
-      </CardHeader>
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-
-            <div className="relative">
-              <Mail className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                className="pl-10"
-                {...register("email")}
-              />
-            </div>
-
-            {errors.email && (
-              <p className="text-destructive text-sm">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-
-            <div className="relative">
-              <Lock className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter password"
-                className="pl-10"
-                {...register("password")}
-              />
-            </div>
-
-            {errors.password && (
-              <p className="text-destructive text-sm">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Signing In..." : "Sign In"}
-          </Button>
-
-          {/* Attribution */}
-          <div className="border-t pt-4">
-            <p className="text-muted-foreground text-center text-xs">
-              Crafted by{" "}
-              <a
-                href="https://strix.website"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground font-semibold transition-colors"
-              >
-                Strix Engineering Studio
-              </a>
-            </p>
-          </div>
-        </CardContent>
+    <main className="w-full max-w-sm rounded-2xl border bg-card p-8 shadow-xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Strix Engineering Studio</p>
+      <h1 className="mt-3 text-2xl font-semibold">Strix Lead</h1>
+      <p className="mt-1 text-sm text-muted-foreground">Sign in to your lead intelligence console.</p>
+      <form onSubmit={submit} className="mt-7 space-y-4">
+        <label className="block space-y-1.5 text-sm font-medium">Email
+          <input name="email" type="email" autoComplete="username" required className="mt-1 w-full rounded-lg border bg-background px-3 py-2.5" />
+        </label>
+        <label className="block space-y-1.5 text-sm font-medium">Password
+          <input name="password" type="password" autoComplete="current-password" required className="mt-1 w-full rounded-lg border bg-background px-3 py-2.5" />
+        </label>
+        {login.isError && <p role="alert" className="text-sm text-destructive">{login.error.message}</p>}
+        <button disabled={login.isPending} className="w-full rounded-lg bg-primary px-4 py-2.5 font-medium text-primary-foreground disabled:opacity-60">
+          {login.isPending ? "Signing in…" : "Sign in"}
+        </button>
       </form>
-    </Card>
+    </main>
   );
 }
-

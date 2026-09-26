@@ -1,0 +1,1 @@
+export type Activity = { id: string; type: string; title: string; description?: string | null; createdAt: string; lead?: { name: string } | null; organization?: { name: string } | null; person?: { name: string } | null };

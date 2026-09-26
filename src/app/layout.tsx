@@ -1,11 +1,10 @@
-/* eslint-disable react-refresh/only-export-components */
 import type { Metadata } from "next";
 import AppProviders from "@/providers/AppProviders";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Console",
-  description: "Strix Engineering Studio Console",
+  title: "Strix Lead | Strix Engineering Studio",
+  description: "Lead intelligence console for Strix Engineering Studio",
 };
 
 export default function RootLayout({

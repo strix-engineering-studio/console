@@ -1,1 +1,2 @@
-export { default } from "@/features/organizations/pages/OrganizationsPage";
+import { OrganizationsPage } from "@/features/organizations";
+export default function Page() { return <OrganizationsPage />; }
