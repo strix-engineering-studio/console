@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { isApiAdmin } from "@/lib/auth/api-session";
 import { generateMcpKey } from "@/integrations/mcp/auth";
 import { mcpRepository } from "@/integrations/mcp/repository";
+import { OAUTH_SCOPES } from "@/integrations/mcp/oauth";
 import { z } from "zod";
 
 const schema = z.object({
   name: z.string().trim().min(1).max(100),
+  scopes: z.array(z.enum(OAUTH_SCOPES)).min(1),
   expiresAt: z.coerce.date().optional(),
 });
 
@@ -13,7 +15,14 @@ export async function GET() {
   if (!(await isApiAdmin()))
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   try {
-    return NextResponse.json({ data: await mcpRepository.listKeys() });
+    const now = new Date();
+    const keys = await mcpRepository.listKeys();
+    return NextResponse.json({ data: keys.map((key) => ({
+      ...key,
+      scopes: (key.scopes ?? "strix:read").split(/\s+/).filter(Boolean),
+      keyPrefix: key.keyPrefix ?? "strix_mcp_",
+      status: key.revokedAt ? "revoked" : key.expiresAt && key.expiresAt <= now ? "expired" : "active",
+    })) }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return NextResponse.json(
       { error: "The request could not be completed." },
@@ -31,12 +40,12 @@ export async function POST(request: Request) {
     (parsed.data.expiresAt && parsed.data.expiresAt <= new Date())
   )
     return NextResponse.json(
-      { error: "Provide a valid name and future expiration date." },
+      { error: "Provide a valid name, at least one permission, and a future expiration date." },
       { status: 400 },
     );
   try {
     return NextResponse.json(
-      { data: await generateMcpKey(parsed.data.name, parsed.data.expiresAt) },
+      { data: await generateMcpKey(parsed.data.name, parsed.data.scopes, parsed.data.expiresAt) },
       { status: 201, headers: { "Cache-Control": "no-store" } },
     );
   } catch {

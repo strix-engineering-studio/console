@@ -108,12 +108,16 @@ model Activity {
 }
 
 model McpApiKey {
-  id        String    @id @default(uuid()) @map("_id")
-  name      String
-  keyHash   String    @unique
-  expiresAt DateTime?
-  revokedAt DateTime?
-  createdAt DateTime  @default(now())
+  id         String    @id @default(uuid()) @map("_id")
+  name       String
+  keyHash    String    @unique
+  keyPrefix  String?
+  scopes     String?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
 }
 
 model McpIdempotency {

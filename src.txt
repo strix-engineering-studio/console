@@ -3,14 +3,15 @@
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src
 
-[.]          [app]        [features]   [lib]        
-[..]         [components] [hooks]      [providers]  
+[.]            [app]          [features]     [integrations] [providers]
+[..]           [components]   [hooks]        [lib]          
                0 File(s)              0 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app
 
-[.]           [(admin)]     [auth]        layout.tsx    
-[..]          [api]         globals.css   page.tsx      
+[.]           [.well-known] globals.css   page.tsx      
+[..]          [api]         layout.tsx    
+[(admin)]     [auth]        [oauth]       
                3 File(s)          4,837 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\(admin)
@@ -110,11 +111,33 @@
 [.]        [..]       page.tsx   
                1 File(s)            112 bytes
 
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\.well-known
+
+[.]                          [oauth-protected-resource]
+[..]                         
+[oauth-authorization-server] 
+               0 File(s)              0 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\.well-known\oauth-authorization-server
+
+[.]        [..]       route.ts   
+               1 File(s)          1,080 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\.well-known\oauth-protected-resource
+
+[.]             [..]            [[...resource]] 
+               0 File(s)              0 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\.well-known\oauth-protected-resource\[...resource]
+
+[.]        [..]       route.ts   
+               1 File(s)            892 bytes
+
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api
 
-[.]             [auth]          [map]           [research]      
-[..]            [dashboard]     [organizations] 
-[activities]    [leads]         [people]        
+[.]             [auth]          [map]           [people]        
+[..]            [dashboard]     [mcp]           [research]      
+[activities]    [leads]         [organizations] 
                0 File(s)              0 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\activities
@@ -157,6 +180,21 @@
 [.]        [..]       route.ts   
                1 File(s)            366 bytes
 
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\mcp
+
+[.]        [..]       [keys]     route.ts   
+               1 File(s)          3,005 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\mcp\keys
+
+[.]        [..]       route.ts   [[id]]     
+               1 File(s)          1,932 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\mcp\keys\[id]
+
+[.]        [..]       route.ts   
+               1 File(s)            742 bytes
+
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\organizations
 
 [.]        [..]       route.ts   [[id]]     
@@ -196,6 +234,32 @@
 
 [.]        [..]       page.tsx   
                1 File(s)            102 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\oauth
+
+[.]         [authorize] [revoke]    
+[..]        [register]  [token]     
+               0 File(s)              0 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\oauth\authorize
+
+[.]        [..]       route.ts   
+               1 File(s)          8,251 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\oauth\register
+
+[.]        [..]       route.ts   
+               1 File(s)          1,432 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\oauth\revoke
+
+[.]        [..]       route.ts   
+               1 File(s)            963 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\app\oauth\token
+
+[.]        [..]       route.ts   
+               1 File(s)          3,459 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\components
 
@@ -247,7 +311,7 @@
 
 [.]                      activity.repository.ts   
 [..]                     
-               1 File(s)            364 bytes
+               1 File(s)            498 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\activity\schemas
 
@@ -257,9 +321,9 @@
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\activity\services
 
-[.]                   activity.queries.ts   
-[..]                  activity.service.ts   
-               2 File(s)            860 bytes
+[.]                       activity.mcp.service.ts   activity.service.ts
+[..]                      activity.queries.ts       
+               3 File(s)          1,269 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\activity\types
 
@@ -276,7 +340,7 @@
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\auth\pages
 
 [.]             [..]            LoginPage.tsx   
-               1 File(s)          1,908 bytes
+               1 File(s)          2,220 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\auth\repositories
 
@@ -347,7 +411,7 @@ LeadCreatePage.tsx    LeadsPage.tsx
 
 [.]                  lead.repository.ts   
 [..]                 
-               1 File(s)          1,056 bytes
+               1 File(s)          1,121 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\leads\schemas
 
@@ -357,9 +421,9 @@ LeadCreatePage.tsx    LeadsPage.tsx
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\leads\services
 
-[.]                leads.queries.ts   
-[..]               leads.service.ts   
-               2 File(s)          1,605 bytes
+[.]                    leads.mcp.service.ts   leads.service.ts
+[..]                   leads.queries.ts       
+               3 File(s)          2,061 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\leads\types
 
@@ -418,7 +482,7 @@ OrganizationDetailsPage.tsx
 
 [.]                          organization.repository.ts
 [..]                         
-               1 File(s)            922 bytes
+               1 File(s)            995 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\organizations\schemas
 
@@ -428,10 +492,10 @@ OrganizationDetailsPage.tsx
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\organizations\services
 
-[.]                        organizations.service.ts
-[..]                       
-organizations.queries.ts   
-               2 File(s)          1,845 bytes
+[.]                            organizations.queries.ts
+[..]                           organizations.service.ts
+organizations.mcp.service.ts   
+               3 File(s)          2,404 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\organizations\types
 
@@ -462,7 +526,7 @@ PeoplePage.tsx          PersonEditPage.tsx
 
 [.]                    person.repository.ts   
 [..]                   
-               1 File(s)            884 bytes
+               1 File(s)            951 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\people\schemas
 
@@ -472,9 +536,9 @@ PeoplePage.tsx          PersonEditPage.tsx
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\people\services
 
-[.]                 people.queries.ts   
-[..]                people.service.ts   
-               2 File(s)          1,637 bytes
+[.]                     people.mcp.service.ts   people.service.ts
+[..]                    people.queries.ts       
+               3 File(s)          2,114 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\people\types
 
@@ -503,20 +567,21 @@ PeoplePage.tsx          PersonEditPage.tsx
 
 [.]                      research.repository.ts   
 [..]                     
-               1 File(s)            386 bytes
+               1 File(s)            687 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\research\schemas
 
 [.]                  index.ts             
 [..]                 research.schema.ts   
-               2 File(s)            410 bytes
+               2 File(s)            882 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\research\services
 
 [.]                            research.queries.ts
 [..]                           research.service.ts
 research-provider.service.ts   
-               3 File(s)          1,909 bytes
+research.mcp.service.ts        
+               4 File(s)          2,401 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\research\types
 
@@ -526,23 +591,45 @@ research-provider.service.ts
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\settings
 
-[.]        [..]       index.ts   [pages]    
+[.]          [..]         [components] index.ts     [pages]      
                1 File(s)             64 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\features\settings\components
+
+[.]              [..]             McpApiKeys.tsx   
+               1 File(s)          7,227 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\settings\pages
 
 [.]                [..]               SettingsPage.tsx   
-               1 File(s)          1,073 bytes
+               1 File(s)          1,148 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\hooks
 
 [.]             [..]            use-mobile.ts   
                1 File(s)            570 bytes
 
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\integrations
+
+[.]   [..]  [mcp] 
+               0 File(s)              0 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\integrations\mcp
+
+[.]             auth.ts         oauth.ts        server.ts       
+[..]            context.ts      repository.ts   [tools]         
+               5 File(s)         25,291 bytes
+
+ Directory of P:\project\Strix Engineering Studio\strix-console\src\integrations\mcp\tools
+
+[.]                leads.ts           people.ts          
+[..]               organizations.ts   
+               3 File(s)              0 bytes
+
  Directory of P:\project\Strix Engineering Studio\strix-console\src\lib
 
-[.]         [api]       [constants] utils.ts    
-[..]        [auth]      prisma.ts   
+[.]         [api]       prisma.ts   
+[..]        [auth]      utils.ts    
                2 File(s)            604 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\lib\api
@@ -556,16 +643,11 @@ research-provider.service.ts
 [..]             session.ts       
                2 File(s)          2,133 bytes
 
- Directory of P:\project\Strix Engineering Studio\strix-console\src\lib\constants
-
-[.]  [..] 
-               0 File(s)              0 bytes
-
  Directory of P:\project\Strix Engineering Studio\strix-console\src\providers
 
 [.]                [..]               AppProviders.tsx   
                1 File(s)            666 bytes
 
      Total Files Listed:
-             146 File(s)        138,182 bytes
-             302 Dir(s)  32,056,664,064 bytes free
+             169 File(s)        196,348 bytes
+             347 Dir(s)  28,130,627,584 bytes free
