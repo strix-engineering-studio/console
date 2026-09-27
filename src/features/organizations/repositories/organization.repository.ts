@@ -7,4 +7,5 @@ export const organizationRepository = {
   findByName: (name: string) => prisma.organization.findFirst({ where: { name: { equals: name, mode: "insensitive" } } }),
   create: (data: OrganizationInput) => prisma.organization.create({ data }),
   update: (id: string, data: Partial<OrganizationInput>) => prisma.organization.update({ where: { id }, data }),
+  delete: (id: string) => prisma.organization.delete({ where: { id } }),
 };

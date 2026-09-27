@@ -12,7 +12,13 @@ export default function LoginPage() {
     const form = new FormData(event.currentTarget);
     try {
       await login.mutateAsync({ email: String(form.get("email") ?? ""), password: String(form.get("password") ?? "") });
-      router.replace("/dashboard");
+      const requestedDestination = new URLSearchParams(window.location.search).get("returnTo");
+      const destination = requestedDestination?.startsWith("/") &&
+        !requestedDestination.startsWith("//") &&
+        !requestedDestination.includes("\\")
+        ? requestedDestination
+        : "/dashboard";
+      router.replace(destination);
       router.refresh();
     } catch { /* The mutation exposes the error state below. */ }
   }

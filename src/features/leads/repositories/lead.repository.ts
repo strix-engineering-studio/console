@@ -7,4 +7,5 @@ export const leadRepository = {
   findById: (id: string) => prisma.lead.findUnique({ where: { id }, include: { organization: true, person: true, research: { orderBy: { createdAt: "desc" } }, activities: { orderBy: { createdAt: "desc" } } } }),
   create: async (data: LeadInput) => { const lead = await prisma.lead.create({ data, include: { organization: true, person: true } }); await prisma.activity.create({ data: { type: "LEAD_CREATED", title: `Lead created: ${lead.name}`, leadId: lead.id } }); return lead; },
   update: (id: string, data: Partial<LeadInput>) => prisma.lead.update({ where: { id }, data, include: { organization: true, person: true } }),
+  delete: (id: string) => prisma.lead.delete({ where: { id } }),
 };

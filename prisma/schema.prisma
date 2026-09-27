@@ -107,6 +107,81 @@ model Activity {
   @@index([createdAt])
 }
 
+model McpApiKey {
+  id        String    @id @default(uuid()) @map("_id")
+  name      String
+  keyHash   String    @unique
+  expiresAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model McpIdempotency {
+  id        String   @id @default(uuid()) @map("_id")
+  tool      String
+  key       String
+  requestHash String
+  resultJson String?
+  createdAt DateTime @default(now())
+
+  @@unique([tool, key])
+}
+
+model McpOAuthClient {
+  id          String   @id @default(uuid()) @map("_id")
+  clientId    String   @unique
+  clientName  String
+  redirectUris String[]
+  grantTypes  String[]
+  responseTypes String[]
+  createdAt   DateTime @default(now())
+}
+
+model McpOAuthRequest {
+  id            String   @id @default(uuid()) @map("_id")
+  adminId       String
+  clientId      String
+  redirectUri   String
+  state         String?
+  codeChallenge String
+  scopes        String
+  resource      String
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model McpOAuthAuthorizationCode {
+  id            String   @id @default(uuid()) @map("_id")
+  codeHash      String   @unique
+  adminId       String
+  clientId      String
+  redirectUri   String
+  codeChallenge String
+  scopes        String
+  resource      String
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model McpOAuthToken {
+  id        String    @id @default(uuid()) @map("_id")
+  tokenHash String    @unique
+  tokenType String
+  adminId   String
+  clientId  String
+  scopes    String
+  resource  String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([clientId, tokenType, expiresAt])
+}
+
 enum LeadStatus {
   NEW
   RESEARCHING

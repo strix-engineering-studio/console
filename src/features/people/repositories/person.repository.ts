@@ -7,4 +7,5 @@ export const personRepository = {
   findByEmail: (email: string) => prisma.person.findFirst({ where: { email: { equals: email, mode: "insensitive" } } }),
   create: (data: PersonInput) => prisma.person.create({ data }),
   update: (id: string, data: Partial<PersonInput>) => prisma.person.update({ where: { id }, data }),
+  delete: (id: string) => prisma.person.delete({ where: { id } }),
 };
