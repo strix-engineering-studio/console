@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import { FormWrapper } from "@/components/forms/FormWrapper";
 
 import { organizationSchema, type OrganizationInput } from "../schemas";
+import {
+  OrganizationArrayFields,
+  OrganizationDateField,
+} from "./OrganizationArrayFields";
 
 import { useCreateOrganization } from "../services/organizations.queries";
 
@@ -163,7 +167,9 @@ function Fields() {
       <label className="text-sm">
         Business type
         <select
-          {...register("businessType")}
+          {...register("businessType", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Select type</option>
@@ -202,7 +208,9 @@ function Fields() {
       <label className="text-sm">
         Company stage
         <select
-          {...register("companyStage")}
+          {...register("companyStage", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Select stage</option>
@@ -392,6 +400,8 @@ function Fields() {
           BUSINESS
           ===================================================== */}
 
+      <OrganizationArrayFields />
+
       <label className="text-sm sm:col-span-2">
         Description
         <textarea
@@ -453,6 +463,22 @@ function Fields() {
         )}
       </label>
 
+      <OrganizationDateField name="lastFundingDate" label="Last funding date" />
+
+      <label className="text-sm">
+        Hiring
+        <select
+          {...register("hiring", {
+            setValueAs: (value) => (value === "" ? null : value === "true"),
+          })}
+          className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
+        >
+          <option value="">Unknown</option>
+          <option value="true">Currently hiring</option>
+          <option value="false">Not currently hiring</option>
+        </select>
+      </label>
+
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -469,7 +495,9 @@ function Fields() {
       <label className="text-sm">
         Relationship stage
         <select
-          {...register("relationshipStage")}
+          {...register("relationshipStage", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Unknown</option>
@@ -524,7 +552,9 @@ function Fields() {
       <label className="text-sm">
         Discovery source
         <select
-          {...register("discoverySource")}
+          {...register("discoverySource", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Select source</option>
@@ -559,6 +589,8 @@ function Fields() {
           </span>
         )}
       </label>
+
+      <OrganizationDateField name="discoveredAt" label="Discovered at" />
 
       {/* =====================================================
           NOTES

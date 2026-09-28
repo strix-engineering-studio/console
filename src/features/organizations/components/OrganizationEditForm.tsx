@@ -5,6 +5,10 @@ import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/FormWrapper";
 
 import { organizationSchema, type OrganizationInput } from "../schemas";
+import {
+  OrganizationArrayFields,
+  OrganizationDateField,
+} from "./OrganizationArrayFields";
 
 import { useUpdateOrganization } from "../services/organizations.queries";
 
@@ -160,7 +164,9 @@ function Fields() {
       <label className="text-sm">
         Business type
         <select
-          {...register("businessType")}
+          {...register("businessType", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Select type</option>
@@ -198,7 +204,9 @@ function Fields() {
       <label className="text-sm">
         Company stage
         <select
-          {...register("companyStage")}
+          {...register("companyStage", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Select stage</option>
@@ -421,19 +429,7 @@ function Fields() {
         )}
       </label>
 
-      <label className="text-sm">
-        Last funding date
-        <input
-          type="datetime-local"
-          {...register("lastFundingDate")}
-          className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
-        />
-        {errors.lastFundingDate && (
-          <span className="mt-1 block text-sm text-destructive">
-            {errors.lastFundingDate.message}
-          </span>
-        )}
-      </label>
+      <OrganizationDateField name="lastFundingDate" label="Last funding date" />
 
       <label className="flex items-center gap-2 text-sm">
         <input
@@ -451,7 +447,9 @@ function Fields() {
       <label className="text-sm">
         Relationship stage
         <select
-          {...register("relationshipStage")}
+          {...register("relationshipStage", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Unknown</option>
@@ -506,7 +504,9 @@ function Fields() {
       <label className="text-sm">
         Discovery source
         <select
-          {...register("discoverySource")}
+          {...register("discoverySource", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Select source</option>
@@ -542,9 +542,13 @@ function Fields() {
         )}
       </label>
 
+      <OrganizationDateField name="discoveredAt" label="Discovered at" />
+
       {/* =====================================================
           DESCRIPTION / NOTES
           ===================================================== */}
+
+      <OrganizationArrayFields />
 
       <label className="text-sm sm:col-span-2">
         Description

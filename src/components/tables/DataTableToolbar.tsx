@@ -279,11 +279,13 @@ export function DataTableToolbar<TData, TValue>({
 
         {enableColumnVisibility && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <SlidersHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="outline">
+                  <SlidersHorizontal className="h-4 w-4" />
+                </Button>
+              }
+            />
 
             <DropdownMenuContent align="end" className="w-56">
               {table

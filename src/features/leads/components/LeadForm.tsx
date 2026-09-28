@@ -107,7 +107,9 @@ function Fields() {
       <label className="text-sm">
         Organization
         <select
-          {...register("organizationId")}
+          {...register("organizationId", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">None</option>
@@ -128,7 +130,7 @@ function Fields() {
       <label className="text-sm">
         Person
         <select
-          {...register("personId")}
+          {...register("personId", { setValueAs: (value) => value || null })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">None</option>
@@ -258,7 +260,9 @@ function Fields() {
       <label className="text-sm">
         Outreach channel
         <select
-          {...register("outreachChannel")}
+          {...register("outreachChannel", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">None</option>

@@ -46,7 +46,7 @@ export function FilterDropdown({
 }: FilterDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button variant="outline" size="icon" aria-label="Filters">
           <Filter className="h-4 w-4" />
           <span className="sr-only">Filters</span>
@@ -69,12 +69,12 @@ export function FilterDropdown({
 
                   <Select
                     value={values[filter.key] ?? "ALL"}
-                    onValueChange={(value) => {
-                      onChange?.(
-                        filter.key,
-                        value === "ALL" ? undefined : value,
-                      );
-                    }}
+                    // onValueChange={(value) => {
+                    //   onChange?.(
+                    //     filter.key,
+                    //     value === true,
+                    //   );
+                    // }}
                   >
                     <SelectTrigger>
                       <SelectValue
@@ -82,7 +82,7 @@ export function FilterDropdown({
                       />
                     </SelectTrigger>
 
-                    <SelectContent position="popper" align="start">
+                    <SelectContent align="start">
                       <SelectItem value="ALL">All</SelectItem>
 
                       {filter.options.map((option) => (

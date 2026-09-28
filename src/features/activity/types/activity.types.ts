@@ -60,4 +60,5 @@ export type ActivityType =
   | "FOLLOW_UP"
   | "PROPOSAL_SENT"
   | "PROPOSAL_RECEIVED"
+  | "MCP_MUTATION"
   | "OTHER";

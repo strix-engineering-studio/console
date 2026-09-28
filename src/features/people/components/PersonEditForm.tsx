@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import { FormWrapper } from "@/components/forms/FormWrapper";
 import { useOrganizations } from "@/features/organizations";
@@ -9,6 +9,96 @@ import { personSchema, type PersonInput } from "../schemas";
 
 import { useUpdatePerson } from "../services/people.queries";
 import type { Person } from "../types";
+
+const inputClass = "mt-1 w-full rounded-lg border bg-background px-3 py-2";
+
+function ArrayField({
+  name,
+  label,
+}: {
+  name:
+    | "previousCompanies"
+    | "skills"
+    | "interests"
+    | "painPoints"
+    | "interestsSignals"
+    | "opportunitySignals"
+    | "tags";
+  label: string;
+}) {
+  const { control } = useFormContext<PersonInput>();
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <label className="text-sm sm:col-span-2">
+          {label}
+          <textarea
+            value={(field.value ?? []).join(", ")}
+            onChange={(event) =>
+              field.onChange(
+                event.target.value
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter(Boolean),
+              )
+            }
+            onBlur={field.onBlur}
+            ref={field.ref}
+            rows={2}
+            placeholder="Separate items with commas"
+            className={inputClass}
+          />
+        </label>
+      )}
+    />
+  );
+}
+
+function toLocalDateTime(value?: string | null) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+    .toISOString()
+    .slice(0, 16);
+}
+
+function DateField({
+  name,
+  label,
+}: {
+  name: "lastContactedAt" | "lastRespondedAt" | "discoveredAt";
+  label: string;
+}) {
+  const { control } = useFormContext<PersonInput>();
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <label className="text-sm">
+          {label}
+          <input
+            type="datetime-local"
+            value={toLocalDateTime(field.value)}
+            onChange={(event) =>
+              field.onChange(
+                event.target.value
+                  ? new Date(event.target.value).toISOString()
+                  : null,
+              )
+            }
+            onBlur={field.onBlur}
+            ref={field.ref}
+            className={inputClass}
+          />
+        </label>
+      )}
+    />
+  );
+}
 
 function Fields() {
   const {
@@ -125,7 +215,7 @@ function Fields() {
       <label className="text-sm">
         Seniority
         <select
-          {...register("seniority")}
+          {...register("seniority", { setValueAs: (value) => value || null })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Unknown</option>
@@ -273,7 +363,7 @@ function Fields() {
       <label className="text-sm">
         Buying role
         <select
-          {...register("buyingRole")}
+          {...register("buyingRole", { setValueAs: (value) => value || null })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">Unknown</option>
@@ -290,7 +380,9 @@ function Fields() {
       <label className="text-sm">
         Decision influence
         <select
-          {...register("decisionInfluence")}
+          {...register("decisionInfluence", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">None</option>
@@ -309,7 +401,9 @@ function Fields() {
       <label className="text-sm">
         Preferred contact method
         <select
-          {...register("preferredContactMethod")}
+          {...register("preferredContactMethod", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">None</option>
@@ -326,6 +420,34 @@ function Fields() {
         <input type="checkbox" {...register("doNotContact")} />
         Do not contact
       </label>
+      <label className="text-sm">
+        Email verified
+        <select
+          {...register("emailVerified", {
+            setValueAs: (value) => (value === "" ? null : value === "true"),
+          })}
+          className={inputClass}
+        >
+          <option value="">Unknown</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </label>
+      <label className="text-sm">
+        Phone verified
+        <select
+          {...register("phoneVerified", {
+            setValueAs: (value) => (value === "" ? null : value === "true"),
+          })}
+          className={inputClass}
+        >
+          <option value="">Unknown</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </label>
+      <DateField name="lastContactedAt" label="Last contacted" />
+      <DateField name="lastRespondedAt" label="Last responded" />
 
       {/* =====================================================
           DISCOVERY
@@ -334,7 +456,9 @@ function Fields() {
       <label className="text-sm">
         Discovery source
         <select
-          {...register("discoverySource")}
+          {...register("discoverySource", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">None</option>
@@ -358,6 +482,7 @@ function Fields() {
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         />
       </label>
+      <DateField name="discoveredAt" label="Discovered at" />
 
       {/* =====================================================
           ORGANIZATION
@@ -366,7 +491,9 @@ function Fields() {
       <label className="text-sm sm:col-span-2">
         Organization
         <select
-          {...register("organizationId")}
+          {...register("organizationId", {
+            setValueAs: (value) => value || null,
+          })}
           className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
         >
           <option value="">None</option>
@@ -383,14 +510,13 @@ function Fields() {
           METADATA
       ===================================================== */}
 
-      <label className="text-sm sm:col-span-2">
-        Tags
-        <input
-          {...register("tags.0")}
-          placeholder="Primary tag"
-          className="mt-1 w-full rounded-lg border bg-background px-3 py-2"
-        />
-      </label>
+      <ArrayField name="previousCompanies" label="Previous companies" />
+      <ArrayField name="skills" label="Skills" />
+      <ArrayField name="interests" label="Interests" />
+      <ArrayField name="painPoints" label="Pain points" />
+      <ArrayField name="interestsSignals" label="Interest signals" />
+      <ArrayField name="opportunitySignals" label="Opportunity signals" />
+      <ArrayField name="tags" label="Tags" />
 
       <label className="text-sm sm:col-span-2">
         Notes
@@ -469,7 +595,7 @@ export default function PersonEditForm({ person }: { person: Person }) {
         discoveryUrl: person.discoveryUrl ?? "",
         discoveredAt: person.discoveredAt ?? null,
 
-        organizationId: person.organizationId ?? "",
+        organizationId: person.organizationId ?? null,
 
         tags: person.tags ?? [],
         notes: person.notes ?? "",
