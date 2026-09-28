@@ -121,7 +121,7 @@
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\.well-known\oauth-authorization-server
 
 [.]        [..]       route.ts   
-               1 File(s)          1,080 bytes
+               1 File(s)          1,297 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\.well-known\oauth-protected-resource
 
@@ -131,7 +131,7 @@
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\.well-known\oauth-protected-resource\[...resource]
 
 [.]        [..]       route.ts   
-               1 File(s)            892 bytes
+               1 File(s)          1,200 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api
 
@@ -183,12 +183,12 @@
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\mcp
 
 [.]        [..]       [keys]     route.ts   
-               1 File(s)          3,005 bytes
+               1 File(s)          5,553 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\mcp\keys
 
 [.]        [..]       route.ts   [[id]]     
-               1 File(s)          1,932 bytes
+               1 File(s)          2,000 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\api\mcp\keys\[id]
 
@@ -244,7 +244,7 @@
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\oauth\authorize
 
 [.]        [..]       route.ts   
-               1 File(s)          8,251 bytes
+               1 File(s)          8,874 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\app\oauth\register
 
@@ -532,7 +532,7 @@ PeoplePage.tsx          PersonEditPage.tsx
 
 [.]                index.ts           
 [..]               person.schema.ts   
-               2 File(s)            498 bytes
+               2 File(s)            513 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\people\services
 
@@ -602,7 +602,7 @@ research.mcp.service.ts
  Directory of P:\project\Strix Engineering Studio\strix-console\src\features\settings\pages
 
 [.]                [..]               SettingsPage.tsx   
-               1 File(s)          1,148 bytes
+               1 File(s)          1,495 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\hooks
 
@@ -618,7 +618,7 @@ research.mcp.service.ts
 
 [.]             auth.ts         oauth.ts        server.ts       
 [..]            context.ts      repository.ts   [tools]         
-               5 File(s)         25,291 bytes
+               5 File(s)         29,445 bytes
 
  Directory of P:\project\Strix Engineering Studio\strix-console\src\integrations\mcp\tools
 
@@ -649,5 +649,5 @@ research.mcp.service.ts
                1 File(s)            666 bytes
 
      Total Files Listed:
-             169 File(s)        196,348 bytes
-             347 Dir(s)  28,130,627,584 bytes free
+             169 File(s)        204,628 bytes
+             347 Dir(s)  27,661,176,832 bytes free

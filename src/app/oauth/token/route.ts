@@ -22,7 +22,9 @@ export async function POST(request: Request) {
     if (!form || typeof form.client_id !== "string")
       throw new OAuthError("invalid_request", "A form-encoded OAuth token request is required.");
     const client = await mcpRepository.findOAuthClient(form.client_id);
-    if (!client) throw new OAuthError("invalid_client", "The OAuth client is not registered.", 401);
+    if (!client || client.revokedAt) throw new OAuthError("invalid_client", "The OAuth client is not registered.", 401);
+    if ((client.tokenEndpointAuthMethod ?? "none") !== "none")
+      throw new OAuthError("unauthorized_client", "This OAuth client is not a public PKCE client.");
     if (form.client_secret) throw new OAuthError("invalid_client", "This public OAuth client must not send a client secret.", 401);
     const urls = getOAuthUrls(request.url);
     if (form.resource !== urls.resource)

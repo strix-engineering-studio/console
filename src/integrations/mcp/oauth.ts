@@ -21,6 +21,8 @@ export class OAuthError extends Error {
 
 export function getOAuthUrls(requestUrl: string) {
   const configured = process.env.MCP_PUBLIC_URL?.trim();
+  if (process.env.NODE_ENV === "production" && !configured)
+    throw new Error("MCP_PUBLIC_URL must be configured with the canonical public /api/mcp URL.");
 
   const resource = new URL(
     configured || new URL("/api/mcp", requestUrl).toString(),
@@ -85,13 +87,47 @@ export function isAllowedRedirectUri(value: string) {
   } catch {
     return false;
   }
-  if (uri.username || uri.password || uri.hash) return false;
-  if (uri.protocol === "https:" && uri.hostname === "chatgpt.com") return true;
-  return (
+  if (
+    uri.username ||
+    uri.password ||
+    value.includes("#") ||
+    value.includes("*") ||
+    /%2a/i.test(value)
+  )
+    return false;
+  if (uri.protocol === "https:") return true;
+  return process.env.NODE_ENV !== "production" &&
     uri.protocol === "http:" &&
     ["localhost", "127.0.0.1", "[::1]", "::1"].includes(uri.hostname) &&
-    Boolean(uri.port)
-  );
+    Boolean(uri.port);
+}
+
+export async function createAdminOAuthClient(input: {
+  name: string;
+  redirectUris: string[];
+  scopes: OAuthScope[];
+}) {
+  const name = input.name.trim();
+  if (!name || name.length > 120)
+    throw new OAuthError("invalid_client_metadata", "The client name must be between 1 and 120 characters.");
+  if (
+    !input.redirectUris.length ||
+    input.redirectUris.length > 10 ||
+    input.redirectUris.some((uri) => !isAllowedRedirectUri(uri))
+  )
+    throw new OAuthError("invalid_redirect_uri", "Provide up to 10 exact HTTPS redirect URIs. Loopback HTTP is allowed only in development.");
+  if (!input.scopes.length || input.scopes.some((scope) => !OAUTH_SCOPES.includes(scope)))
+    throw new OAuthError("invalid_scope", "Select at least one supported Strix scope.");
+  const created = await mcpRepository.createOAuthClient({
+    clientId: `strix_client_${randomBytes(32).toString("base64url")}`,
+    clientName: name,
+    redirectUris: [...new Set(input.redirectUris)],
+    grantTypes: ["authorization_code", "refresh_token"],
+    responseTypes: ["code"],
+    tokenEndpointAuthMethod: "none",
+    scopes: [...new Set(input.scopes)].join(" "),
+  });
+  return created;
 }
 
 export async function registerOAuthClient(input: unknown) {
@@ -112,12 +148,12 @@ export async function registerOAuthClient(input: unknown) {
   )
     throw new OAuthError(
       "invalid_redirect_uri",
-      "Only HTTPS ChatGPT callbacks and loopback development callbacks are allowed.",
+      "Only HTTPS redirect URIs and loopback development callbacks are allowed.",
     );
 
   const grantTypes = Array.isArray(body.grant_types)
     ? body.grant_types
-    : ["authorization_code"];
+    : ["authorization_code", "refresh_token"];
   const responseTypes = Array.isArray(body.response_types)
     ? body.response_types
     : ["code"];
@@ -143,17 +179,19 @@ export async function registerOAuthClient(input: unknown) {
       "Public clients must use token_endpoint_auth_method=none.",
     );
 
-  const clientId = `strix_client_${randomBytes(32).toString("base64url")}`;
+  const scopes = typeof body.scope === "string" ? parseScopes(body.scope) : [...OAUTH_SCOPES];
   const clientName =
     typeof body.client_name === "string" && body.client_name.trim()
       ? body.client_name.trim().slice(0, 120)
       : "MCP client";
   const created = await mcpRepository.createOAuthClient({
-    clientId,
+    clientId: `strix_client_${randomBytes(32).toString("base64url")}`,
     clientName,
     redirectUris: [...new Set(redirectUris as string[])],
     grantTypes: [...new Set(grantTypes.map(String))],
     responseTypes: [...new Set(responseTypes.map(String))],
+    tokenEndpointAuthMethod: "none",
+    scopes: scopes.join(" "),
   });
   return {
     client_id: created.clientId,
@@ -162,7 +200,8 @@ export async function registerOAuthClient(input: unknown) {
     redirect_uris: created.redirectUris,
     grant_types: created.grantTypes,
     response_types: created.responseTypes,
-    token_endpoint_auth_method: "none",
+    token_endpoint_auth_method: created.tokenEndpointAuthMethod,
+    scope: created.scopes,
   };
 }
 
@@ -223,6 +262,9 @@ export async function exchangeAuthorizationCode(input: {
       "invalid_grant",
       "The authorization code is invalid or expired.",
     );
+  const client = await mcpRepository.findOAuthClient(input.clientId);
+  if (!client || client.revokedAt)
+    throw new OAuthError("invalid_grant", "The authorization code is invalid or expired.");
   const consumed = await mcpRepository.consumeOAuthCode(row.id);
   if (!consumed.count)
     throw new OAuthError(
@@ -279,6 +321,9 @@ export async function exchangeRefreshToken(input: {
       "invalid_grant",
       "The refresh token is invalid or expired.",
     );
+  const client = await mcpRepository.findOAuthClient(input.clientId);
+  if (!client || client.revokedAt)
+    throw new OAuthError("invalid_grant", "The refresh token is invalid or expired.");
   const grantedScopes = row.scopes.split(" ").filter(Boolean);
   const scopes = input.scope ? parseScopes(input.scope) : grantedScopes;
   if (scopes.some((scope) => !grantedScopes.includes(scope)))
@@ -316,6 +361,8 @@ export async function authenticateOAuthAccessToken(
       resource,
     );
     if (!record) return null;
+    const client = await mcpRepository.findOAuthClient(record.clientId);
+    if (!client || client.revokedAt) return null;
     return {
       adminId: record.adminId,
       clientId: record.clientId,

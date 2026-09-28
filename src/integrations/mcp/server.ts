@@ -2,14 +2,9 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { leadSchema } from "@/features/leads/schemas";
 import { leadsMcpService } from "@/features/leads/services/leads.mcp.service";
-import { organizationSchema } from "@/features/organizations/schemas";
 import { organizationsMcpService } from "@/features/organizations/services/organizations.mcp.service";
-import { personSchema } from "@/features/people/schemas";
 import { peopleMcpService } from "@/features/people/services/people.mcp.service";
-import { researchSchema } from "@/features/research/schemas";
-import { researchMcpService } from "@/features/research/services/research.mcp.service";
 import { activityMcpService } from "@/features/activity/services/activity.mcp.service";
 import type { McpAuthentication } from "./auth";
 import { mcpRepository } from "./repository";
@@ -18,13 +13,6 @@ type Entity = "lead" | "organization" | "person" | "research";
 const idSchema = { id: z.string().min(1).max(200) };
 const searchSchema = { q: z.string().max(200).optional() };
 const keySchema = { idempotencyKey: z.string().min(1).max(200).optional() };
-const service = {
-  lead: leadsMcpService,
-  organization: organizationsMcpService,
-  person: peopleMcpService,
-  research: researchMcpService,
-};
-
 function toResult(value: unknown) {
   return { content: [{ type: "text" as const, text: JSON.stringify(value) }] };
 }

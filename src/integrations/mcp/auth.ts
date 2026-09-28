@@ -24,15 +24,6 @@ export async function authenticateMcpRequest(
     if (!/^[A-Za-z0-9_-]{32,}$/.test(apiKey)) return null;
     try {
       const key = await mcpRepository.findActiveKey(hashMcpKey(apiKey));
-      console.log("[MCP API KEY]", {
-        received: true,
-        found: Boolean(key),
-        keyId: key?.id,
-        name: key?.name,
-        scopes: key?.scopes,
-        revokedAt: key?.revokedAt,
-        expiresAt: key?.expiresAt,
-      });
       if (!key) return null;
       void mcpRepository.touchKey(key.id).catch(() => undefined);
       return {

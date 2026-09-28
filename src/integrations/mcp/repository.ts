@@ -55,13 +55,34 @@ export const mcpRepository = {
     prisma.mcpIdempotency.delete({ where: { id } }),
   findOAuthClient: (clientId: string) =>
     prisma.mcpOAuthClient.findUnique({ where: { clientId } }),
+  listOAuthClients: () =>
+    prisma.mcpOAuthClient.findMany({ orderBy: { createdAt: "desc" } }),
   createOAuthClient: (data: {
     clientId: string;
     clientName: string;
     redirectUris: string[];
     grantTypes: string[];
     responseTypes: string[];
+    tokenEndpointAuthMethod?: string;
+    scopes?: string;
   }) => prisma.mcpOAuthClient.create({ data }),
+  revokeOAuthClient: async (id: string) => {
+    const client = await prisma.mcpOAuthClient.findUnique({
+      where: { id },
+      select: { clientId: true },
+    });
+    if (!client) return { count: 0 };
+    const result = await prisma.mcpOAuthClient.updateMany({
+      where: { id, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+    if (result.count)
+      await prisma.mcpOAuthToken.updateMany({
+        where: { clientId: client.clientId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+    return result;
+  },
   createOAuthRequest: (data: {
     adminId: string;
     clientId: string;

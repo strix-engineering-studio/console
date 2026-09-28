@@ -80,7 +80,7 @@ export default function McpApiKeys() {
   return <section className="mt-10 max-w-4xl">
     <div>
       <p className="text-sm text-muted-foreground">Manage credentials for external MCP integrations</p>
-      <h2 className="mt-1 text-2xl font-semibold tracking-tight">MCP API keys</h2>
+      <h2 className="mt-1 text-2xl font-semibold tracking-tight">MCP API Keys</h2>
     </div>
 
     <form onSubmit={createKey} className="mt-5 grid gap-4 rounded-xl border bg-card p-5 md:grid-cols-2">

@@ -132,13 +132,17 @@ model McpIdempotency {
 }
 
 model McpOAuthClient {
-  id          String   @id @default(uuid()) @map("_id")
-  clientId    String   @unique
-  clientName  String
-  redirectUris String[]
-  grantTypes  String[]
-  responseTypes String[]
-  createdAt   DateTime @default(now())
+  id                       String   @id @default(uuid()) @map("_id")
+  clientId                 String   @unique
+  clientName               String
+  redirectUris             String[]
+  grantTypes               String[]
+  responseTypes            String[]
+  tokenEndpointAuthMethod  String?  @default("none")
+  scopes                   String?  @default("strix:read strix:write")
+  revokedAt                DateTime?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime? @updatedAt
 }
 
 model McpOAuthRequest {
