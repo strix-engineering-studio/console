@@ -7,195 +7,728 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * =========================================================
+ * ADMIN
+ * =========================================================
+ */
+
 model Admin {
-  id           String   @id @default(uuid()) @map("_id")
-  email        String   @unique
+  id           String @id @default(uuid()) @map("_id")
+  email        String @unique
   passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads        Lead[]
+  activities   Activity[]
+  researchRuns ResearchRun[]
 }
+
+/**
+ * =========================================================
+ * ORGANIZATION
+ * =========================================================
+ */
 
 model Organization {
-  id          String       @id @default(uuid()) @map("_id")
+  id String @id @default(uuid()) @map("_id")
+
+  // -------------------------
+  // Identity
+  // -------------------------
+
   name        String
-  website     String?
-  industry    String?
+  legalName   String?
+  aliases     String[]
   description String?
-  location    String?
-  country     String?
-  city        String?
-  linkedinUrl String?
-  people      Person[]
-  leads       Lead[]
-  research    ResearchRun[]
-  activities  Activity[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+
+  // -------------------------
+  // Web / Social
+  // -------------------------
+
+  website       String?
+  linkedinUrl   String?
+  twitterUrl    String?
+  githubUrl     String?
+  crunchbaseUrl String?
+
+  // -------------------------
+  // Classification
+  // -------------------------
+
+  industry      String?
+  subIndustry   String?
+  businessType  OrganizationBusinessType?
+  businessModel String?
+
+  // -------------------------
+  // Company Size
+  // -------------------------
+
+  employeeCountMin Int?
+  employeeCountMax Int?
+  employeeCount    Int?
+
+  companyStage CompanyStage?
+
+  foundedYear Int?
+
+  // -------------------------
+  // Geography
+  // -------------------------
+
+  address    String?
+  city       String?
+  state      String?
+  country    String?
+  postalCode String?
+  timezone   String?
+
+  // -------------------------
+  // Business Information
+  // -------------------------
+
+  products      String[]
+  services      String[]
+  technologies  String[]
+  targetMarkets String[]
+
+  // -------------------------
+  // Commercial / Financial
+  // -------------------------
+
+  revenueRange    String?
+  fundingStage    String?
+  totalFunding    String?
+  lastFundingDate DateTime?
+  isBootstrapped  Boolean?
+
+  // -------------------------
+  // Buying / Opportunity Signals
+  // -------------------------
+
+  hiring             Boolean?
+  hiringSignals      String[]
+  growthSignals      String[]
+  technologySignals  String[]
+  painPoints         String[]
+  opportunitySignals String[]
+
+  // -------------------------
+  // Relationship
+  // -------------------------
+
+  relationshipStage OrganizationRelationshipStage?
+  isTargetAccount   Boolean                        @default(false)
+  isClient          Boolean                        @default(false)
+  isPartner         Boolean                        @default(false)
+
+  // -------------------------
+  // Discovery
+  // -------------------------
+
+  discoverySource LeadSource?
+  discoveryUrl    String?
+
+  discoveredAt DateTime?
+
+  // -------------------------
+  // Research
+  // -------------------------
+
+  lastResearchAt     DateTime?
+  researchSummary    String?
+  researchConfidence Float?
+
+  // -------------------------
+  // Metadata
+  // -------------------------
+
+  tags  String[]
+  notes String?
+
+  // -------------------------
+  // Relations
+  // -------------------------
+
+  people     Person[]
+  leads      Lead[]
+  research   ResearchRun[]
+  activities Activity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([name])
+  @@index([industry])
+  @@index([city])
+  @@index([country])
+  @@index([companyStage])
+  @@index([isTargetAccount])
+  @@index([isClient])
+  @@index([relationshipStage])
 }
 
+/**
+ * =========================================================
+ * PERSON
+ * =========================================================
+ */
+
 model Person {
-  id             String       @id @default(uuid()) @map("_id")
-  name           String
+  id String @id @default(uuid()) @map("_id")
+
+  // -------------------------
+  // Identity
+  // -------------------------
+
+  name       String
+  firstName  String?
+  lastName   String?
+  middleName String?
+
+  // -------------------------
+  // Contact
+  // -------------------------
+
   email          String?
+  personalEmail  String?
   phone          String?
-  title          String?
-  linkedinUrl    String?
-  location       String?
+  alternatePhone String?
+
+  // -------------------------
+  // Professional
+  // -------------------------
+
+  title      String?
+  department String?
+  seniority  PersonSeniority?
+
+  isDecisionMaker Boolean @default(false)
+  isInfluencer    Boolean @default(false)
+  isTechnical     Boolean @default(false)
+
+  // -------------------------
+  // Social / Professional
+  // -------------------------
+
+  linkedinUrl String?
+  twitterUrl  String?
+  githubUrl   String?
+  websiteUrl  String?
+
+  // -------------------------
+  // Location
+  // -------------------------
+
+  address    String?
+  city       String?
+  state      String?
+  country    String?
+  postalCode String?
+  timezone   String?
+
+  // -------------------------
+  // Professional Background
+  // -------------------------
+
+  bio               String?
+  previousCompanies String[]
+  skills            String[]
+  interests         String[]
+
+  // -------------------------
+  // Buying / Influence
+  // -------------------------
+
+  buyingRole        BuyingRole?
+  decisionInfluence DecisionInfluence?
+
+  painPoints         String[]
+  interestsSignals   String[]
+  opportunitySignals String[]
+
+  // -------------------------
+  // Contactability
+  // -------------------------
+
+  emailVerified Boolean?
+  phoneVerified Boolean?
+
+  preferredContactMethod ContactMethod?
+
+  doNotContact Boolean @default(false)
+
+  lastContactedAt DateTime?
+  lastRespondedAt DateTime?
+
+  // -------------------------
+  // Discovery
+  // -------------------------
+
+  discoverySource LeadSource?
+  discoveryUrl    String?
+  discoveredAt    DateTime?
+
+  // -------------------------
+  // Research
+  // -------------------------
+
+  lastResearchAt     DateTime?
+  researchSummary    String?
+  researchConfidence Float?
+
+  // -------------------------
+  // Metadata
+  // -------------------------
+
+  tags  String[]
+  notes String?
+
+  // -------------------------
+  // Organization
+  // -------------------------
+
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
-  leads          Lead[]
-  research       ResearchRun[]
-  activities     Activity[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  // -------------------------
+  // Relations
+  // -------------------------
+
+  leads      Lead[]
+  research   ResearchRun[]
+  activities Activity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([name])
   @@index([email])
+  @@index([phone])
+  @@index([title])
+  @@index([seniority])
+  @@index([organizationId])
+  @@index([isDecisionMaker])
+  @@index([buyingRole])
 }
 
+/**
+ * =========================================================
+ * LEAD
+ * =========================================================
+ */
+
 model Lead {
-  id             String       @id @default(uuid()) @map("_id")
-  name           String
-  status         LeadStatus   @default(NEW)
-  source         LeadSource   @default(MANUAL)
-  notes          String?
+  id String @id @default(uuid()) @map("_id")
+
+  // -------------------------
+  // Opportunity Identity
+  // -------------------------
+
+  name        String
+  description String?
+
+  status LeadStatus @default(NEW)
+  source LeadSource @default(MANUAL)
+
+  priority LeadPriority @default(MEDIUM)
+
+  // -------------------------
+  // Ownership
+  // -------------------------
+
+  ownerId String?
+  owner   Admin?  @relation(fields: [ownerId], references: [id])
+
+  // -------------------------
+  // Organization / Person
+  // -------------------------
+
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
-  personId       String?
-  person         Person?      @relation(fields: [personId], references: [id])
-  research       ResearchRun[]
-  activities     Activity[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  personId String?
+  person   Person? @relation(fields: [personId], references: [id])
+
+  // -------------------------
+  // Qualification
+  // -------------------------
+
+  qualificationStatus QualificationStatus?
+
+  fitScore        Float?
+  intentScore     Float?
+  engagementScore Float?
+  overallScore    Float?
+
+  qualificationNotes String?
+
+  // -------------------------
+  // Need / Problem
+  // -------------------------
+
+  problemStatement  String?
+  painPoints        String[]
+  requirements      String[]
+  requestedServices String[]
+
+  // -------------------------
+  // Commercial
+  // -------------------------
+
+  budgetMin Float?
+  budgetMax Float?
+  currency  String?
+
+  estimatedValue Float?
+
+  // -------------------------
+  // Timeline
+  // -------------------------
+
+  expectedStartDate DateTime?
+  expectedCloseDate DateTime?
+
+  timeline LeadTimeline?
+
+  // -------------------------
+  // Engagement
+  // -------------------------
+
+  engagementLevel EngagementLevel @default(NONE)
+
+  firstContactedAt DateTime?
+  lastContactedAt  DateTime?
+  lastRespondedAt  DateTime?
+
+  responseCount Int @default(0)
+
+  // -------------------------
+  // Outreach
+  // -------------------------
+
+  outreachChannel ContactMethod?
+
+  outreachCount Int @default(0)
+
+  lastOutreachAt DateTime?
+  nextFollowUpAt DateTime?
+
+  // -------------------------
+  // Pipeline
+  // -------------------------
+
+  qualifiedAt DateTime?
+  contactedAt DateTime?
+  engagedAt   DateTime?
+  closedAt    DateTime?
+
+  // -------------------------
+  // Lost / Disqualified
+  // -------------------------
+
+  disqualificationReason String?
+  lostReason             String?
+
+  // -------------------------
+  // Conversion
+  // -------------------------
+
+  convertedToClient Boolean   @default(false)
+  convertedAt       DateTime?
+
+  // -------------------------
+  // Discovery
+  // -------------------------
+
+  discoveryUrl String?
+
+  // -------------------------
+  // Metadata
+  // -------------------------
+
+  tags  String[]
+  notes String?
+
+  // -------------------------
+  // Relations
+  // -------------------------
+
+  research   ResearchRun[]
+  activities Activity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status, createdAt])
   @@index([name])
+  @@index([organizationId])
+  @@index([personId])
+  @@index([ownerId])
+  @@index([priority])
+  @@index([overallScore])
+  @@index([nextFollowUpAt])
+  @@index([expectedCloseDate])
+  @@index([source])
+  @@index([qualificationStatus])
 }
+
+/**
+ * =========================================================
+ * RESEARCH
+ * =========================================================
+ */
 
 model ResearchRun {
-  id             String       @id @default(uuid()) @map("_id")
-  status         ResearchStatus @default(PENDING)
-  summary        String?
-  provider       String?
-  leadId         String?
-  lead           Lead?        @relation(fields: [leadId], references: [id])
+  id String @id @default(uuid()) @map("_id")
+
+  status ResearchStatus @default(PENDING)
+
+  summary String?
+
+  provider String?
+
+  // Store structured research output as JSON.
+  data Json?
+
+  // What triggered the research.
+  trigger ResearchTrigger?
+
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id])
+
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
-  personId       String?
-  person         Person?      @relation(fields: [personId], references: [id])
-  startedAt      DateTime     @default(now())
-  completedAt    DateTime?
-  createdAt      DateTime     @default(now())
-}
 
-model Activity {
-  id             String       @id @default(uuid()) @map("_id")
-  type           String
-  title          String
-  description    String?
-  sourceUrl      String?
-  leadId         String?
-  lead           Lead?        @relation(fields: [leadId], references: [id])
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  personId       String?
-  person         Person?      @relation(fields: [personId], references: [id])
-  createdAt      DateTime     @default(now())
+  personId String?
+  person   Person? @relation(fields: [personId], references: [id])
 
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  admin     Admin?   @relation(fields: [adminId], references: [id])
+  adminId   String?
+
+  @@index([status])
+  @@index([leadId])
+  @@index([organizationId])
+  @@index([personId])
   @@index([createdAt])
 }
 
+/**
+ * =========================================================
+ * ACTIVITY
+ * =========================================================
+ */
+
+model Activity {
+  id String @id @default(uuid()) @map("_id")
+
+  type        ActivityType
+  title       String
+  description String?
+
+  sourceUrl String?
+
+  metadata Json?
+
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id])
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  personId String?
+  person   Person? @relation(fields: [personId], references: [id])
+
+  adminId String?
+  admin   Admin?  @relation(fields: [adminId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type])
+  @@index([leadId])
+  @@index([organizationId])
+  @@index([personId])
+}
+
+/**
+ * =========================================================
+ * MCP API KEY
+ * =========================================================
+ */
+
 model McpApiKey {
-  id         String    @id @default(uuid()) @map("_id")
-  name       String
-  keyHash    String    @unique
-  keyPrefix  String?
-  scopes     String?
+  id String @id @default(uuid()) @map("_id")
+
+  name String
+
+  keyHash   String  @unique
+  keyPrefix String?
+
+  scopes String?
+
   expiresAt  DateTime?
   revokedAt  DateTime?
   lastUsedAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime? @updatedAt
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
+/**
+ * =========================================================
+ * MCP IDEMPOTENCY
+ * =========================================================
+ */
+
 model McpIdempotency {
-  id        String   @id @default(uuid()) @map("_id")
-  tool      String
-  key       String
+  id String @id @default(uuid()) @map("_id")
+
+  tool        String
+  key         String
   requestHash String
-  resultJson String?
+  resultJson  String?
+
   createdAt DateTime @default(now())
 
   @@unique([tool, key])
 }
 
+/**
+ * =========================================================
+ * MCP OAUTH CLIENT
+ * =========================================================
+ */
+
 model McpOAuthClient {
-  id                       String   @id @default(uuid()) @map("_id")
-  clientId                 String   @unique
-  clientName               String
-  redirectUris             String[]
-  grantTypes               String[]
-  responseTypes            String[]
-  tokenEndpointAuthMethod  String?  @default("none")
-  scopes                   String?  @default("strix:read strix:write")
-  revokedAt                DateTime?
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime? @updatedAt
+  id String @id @default(uuid()) @map("_id")
+
+  clientId   String @unique
+  clientName String
+
+  redirectUris  String[]
+  grantTypes    String[]
+  responseTypes String[]
+
+  tokenEndpointAuthMethod String? @default("none")
+
+  scopes String? @default("strix:read strix:write")
+
+  revokedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }
+
+/**
+ * =========================================================
+ * MCP OAUTH REQUEST
+ * =========================================================
+ */
 
 model McpOAuthRequest {
-  id            String   @id @default(uuid()) @map("_id")
-  adminId       String
-  clientId      String
-  redirectUri   String
-  state         String?
+  id String @id @default(uuid()) @map("_id")
+
+  adminId String
+
+  clientId    String
+  redirectUri String
+
+  state String?
+
   codeChallenge String
-  scopes        String
-  resource      String
-  expiresAt     DateTime
-  createdAt     DateTime @default(now())
+
+  scopes   String
+  resource String
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
 
   @@index([expiresAt])
+  @@index([clientId])
 }
+
+/**
+ * =========================================================
+ * MCP OAUTH AUTHORIZATION CODE
+ * =========================================================
+ */
 
 model McpOAuthAuthorizationCode {
-  id            String   @id @default(uuid()) @map("_id")
-  codeHash      String   @unique
-  adminId       String
-  clientId      String
-  redirectUri   String
+  id String @id @default(uuid()) @map("_id")
+
+  codeHash String @unique
+
+  adminId  String
+  clientId String
+
+  redirectUri String
+
   codeChallenge String
-  scopes        String
-  resource      String
-  expiresAt     DateTime
-  createdAt     DateTime @default(now())
+
+  scopes   String
+  resource String
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
 
   @@index([expiresAt])
+  @@index([clientId])
 }
 
+/**
+ * =========================================================
+ * MCP OAUTH TOKEN
+ * =========================================================
+ */
+
 model McpOAuthToken {
-  id        String    @id @default(uuid()) @map("_id")
-  tokenHash String    @unique
+  id String @id @default(uuid()) @map("_id")
+
+  tokenHash String @unique
+
   tokenType String
-  adminId   String
-  clientId  String
-  scopes    String
-  resource  String
+
+  adminId  String
+  clientId String
+
+  scopes   String
+  resource String
+
   expiresAt DateTime
+
   revokedAt DateTime?
-  createdAt DateTime  @default(now())
+
+  createdAt DateTime @default(now())
 
   @@index([clientId, tokenType, expiresAt])
 }
 
+/**
+ * =========================================================
+ * ENUMS
+ * =========================================================
+ */
+
 enum LeadStatus {
   NEW
   RESEARCHING
-  ENGAGED
   CONTACTED
+  ENGAGED
   QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
   DISQUALIFIED
 }
 
@@ -205,7 +738,124 @@ enum LeadSource {
   REFERRAL
   WEBSITE
   LINKEDIN
+  COLD_OUTREACH
+  MCP
+  IMPORT
   OTHER
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum QualificationStatus {
+  UNQUALIFIED
+  PARTIALLY_QUALIFIED
+  QUALIFIED
+  DISQUALIFIED
+}
+
+enum LeadTimeline {
+  IMMEDIATE
+  WITHIN_30_DAYS
+  ONE_TO_THREE_MONTHS
+  THREE_TO_SIX_MONTHS
+  SIX_PLUS_MONTHS
+  UNKNOWN
+}
+
+enum EngagementLevel {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+}
+
+enum ContactMethod {
+  EMAIL
+  PHONE
+  LINKEDIN
+  WHATSAPP
+  WEBSITE
+  OTHER
+}
+
+enum BuyingRole {
+  DECISION_MAKER
+  CHAMPION
+  INFLUENCER
+  USER
+  GATEKEEPER
+  PROCUREMENT
+  UNKNOWN
+}
+
+enum DecisionInfluence {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
+  FINAL_DECISION
+}
+
+enum PersonSeniority {
+  INTERN
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+  MANAGER
+  DIRECTOR
+  VP
+  C_LEVEL
+  FOUNDER
+  OWNER
+  PARTNER
+  UNKNOWN
+}
+
+enum OrganizationBusinessType {
+  STARTUP
+  SMB
+  MID_MARKET
+  ENTERPRISE
+  AGENCY
+  CONSULTING
+  NON_PROFIT
+  GOVERNMENT
+  INDIVIDUAL
+  OTHER
+}
+
+enum CompanyStage {
+  IDEA
+  PRE_SEED
+  SEED
+  SERIES_A
+  SERIES_B
+  SERIES_C
+  GROWTH
+  MATURE
+  PUBLIC
+  BOOTSTRAPPED
+  UNKNOWN
+}
+
+enum OrganizationRelationshipStage {
+  UNKNOWN
+  PROSPECT
+  RESEARCHING
+  CONTACTED
+  ENGAGED
+  QUALIFIED
+  CLIENT
+  PARTNER
+  FORMER_CLIENT
+  NOT_A_FIT
 }
 
 enum ResearchStatus {
@@ -213,4 +863,34 @@ enum ResearchStatus {
   RUNNING
   COMPLETE
   FAILED
+}
+
+enum ResearchTrigger {
+  MANUAL
+  NEW_LEAD
+  SCHEDULED
+  ACTIVITY
+  MCP
+  API
+}
+
+enum ActivityType {
+  NOTE
+  EMAIL_SENT
+  EMAIL_RECEIVED
+  CALL
+  MEETING
+  LINKEDIN_MESSAGE
+  WHATSAPP_MESSAGE
+  WEBSITE_VISIT
+  RESEARCH
+  COMPANY_UPDATE
+  PERSON_UPDATE
+  LEAD_CREATED
+  LEAD_UPDATED
+  STATUS_CHANGED
+  FOLLOW_UP
+  PROPOSAL_SENT
+  PROPOSAL_RECEIVED
+  OTHER
 }
