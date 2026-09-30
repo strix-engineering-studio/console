@@ -6,6 +6,10 @@ import { mcpRepository } from "./repository";
 export const hashMcpKey = (key: string) =>
   createHash("sha256").update(key).digest("hex");
 
+/** Controls authentication only for MCP resource requests. OAuth endpoints
+ * remain available and continue to enforce the OAuth protocol regardless. */
+export const MCP_AUTH_REQUIRED = process.env.MCP_AUTH_REQUIRED !== "false";
+
 export type McpAuthentication =
   | {
       kind: "api-key";
@@ -13,7 +17,8 @@ export type McpAuthentication =
       integrationName: string;
       scopes: OAuthScope[];
     }
-  | { kind: "oauth"; adminId: string; clientId: string; scopes: string[] };
+  | { kind: "oauth"; adminId: string; clientId: string; scopes: string[] }
+  | { kind: "bypass"; scopes: OAuthScope[] };
 
 export async function authenticateMcpRequest(
   request: Request,

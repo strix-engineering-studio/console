@@ -7,7 +7,15 @@ export type OAuthScope = (typeof OAUTH_SCOPES)[number];
 
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 const REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
+const AUTHORIZATION_REQUEST_TTL_MS = 10 * 60 * 1000;
 const AUTHORIZATION_CODE_TTL_MS = 5 * 60 * 1000;
+
+export function logOAuthTransition(event: string, details: Record<string, unknown>) {
+  console.info(JSON.stringify({ component: "mcp-oauth", event, ...details }));
+}
+
+export const authorizationRequestExpiresAt = (now = new Date()) =>
+  new Date(now.getTime() + AUTHORIZATION_REQUEST_TTL_MS);
 
 export class OAuthError extends Error {
   constructor(
@@ -256,21 +264,40 @@ export async function exchangeAuthorizationCode(input: {
   resource: string;
   issueRefreshToken: boolean;
 }) {
+  const now = new Date();
+  logOAuthTransition("token.request", {
+    grantType: "authorization_code",
+    clientId: input.clientId,
+    redirectUri: input.redirectUri,
+    codePresent: Boolean(input.code),
+    codeVerifierPresent: Boolean(input.codeVerifier),
+    now: now.toISOString(),
+  });
   const row = await mcpRepository.findOAuthCode(hash(input.code));
-  if (!row)
+  if (!row) {
+    const inspected = await mcpRepository.inspectOAuthCode(hash(input.code));
+    logOAuthTransition("token.code_lookup", {
+      found: Boolean(inspected),
+      expiresAt: inspected?.expiresAt.toISOString() ?? null,
+      now: now.toISOString(),
+      expired: inspected ? inspected.expiresAt.getTime() <= now.getTime() : null,
+      alreadyUsed: inspected ? inspected.usedAt !== null : null,
+    });
     throw new OAuthError(
       "invalid_grant",
       "The authorization code is invalid or expired.",
     );
+  }
+  logOAuthTransition("token.code_lookup", {
+    found: true,
+    expiresAt: row.expiresAt.toISOString(),
+    now: now.toISOString(),
+    expired: row.expiresAt.getTime() <= now.getTime(),
+    alreadyUsed: row.usedAt !== null,
+  });
   const client = await mcpRepository.findOAuthClient(input.clientId);
   if (!client || client.revokedAt)
     throw new OAuthError("invalid_grant", "The authorization code is invalid or expired.");
-  const consumed = await mcpRepository.consumeOAuthCode(row.id);
-  if (!consumed.count)
-    throw new OAuthError(
-      "invalid_grant",
-      "The authorization code has already been used.",
-    );
 
   const verifierValid = /^[A-Za-z0-9._~-]{43,128}$/.test(input.codeVerifier);
   const expectedChallenge = createHash("sha256")
@@ -287,12 +314,22 @@ export async function exchangeAuthorizationCode(input: {
     row.clientId !== input.clientId ||
     row.redirectUri !== input.redirectUri ||
     row.resource !== input.resource ||
+    row.codeChallengeMethod !== "S256" ||
     !verifierValid ||
     !challengeMatches
   )
     throw new OAuthError(
       "invalid_grant",
       "The authorization code is invalid for this request.",
+    );
+
+  // Validate first, then consume with one atomic database update. Concurrent
+  // exchanges can both read the row, but only one can change usedAt from null.
+  const consumed = await mcpRepository.consumeOAuthCode(row.id, now);
+  if (!consumed.count)
+    throw new OAuthError(
+      "invalid_grant",
+      "The authorization code is invalid, expired, or already used.",
     );
 
   return issueTokenPair({

@@ -1,5 +1,5 @@
 import { allowMcpRequest } from "@/integrations/mcp/context";
-import { exchangeAuthorizationCode, exchangeRefreshToken, getOAuthUrls, OAuthError } from "@/integrations/mcp/oauth";
+import { exchangeAuthorizationCode, exchangeRefreshToken, getOAuthUrls, logOAuthTransition, OAuthError } from "@/integrations/mcp/oauth";
 import { mcpRepository } from "@/integrations/mcp/repository";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +21,14 @@ export async function POST(request: Request) {
     const form = await parseForm(request);
     if (!form || typeof form.client_id !== "string")
       throw new OAuthError("invalid_request", "A form-encoded OAuth token request is required.");
+    logOAuthTransition("token.request_received", {
+      grantType: form.grant_type ?? null,
+      clientId: form.client_id,
+      redirectUri: form.redirect_uri ?? null,
+      codePresent: Boolean(form.code),
+      codeVerifierPresent: Boolean(form.code_verifier),
+      now: new Date().toISOString(),
+    });
     const client = await mcpRepository.findOAuthClient(form.client_id);
     if (!client || client.revokedAt) throw new OAuthError("invalid_client", "The OAuth client is not registered.", 401);
     if ((client.tokenEndpointAuthMethod ?? "none") !== "none")

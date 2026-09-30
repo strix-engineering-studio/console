@@ -89,6 +89,7 @@ export const mcpRepository = {
     redirectUri: string;
     state?: string;
     codeChallenge: string;
+    codeChallengeMethod: string;
     scopes: string;
     resource: string;
     expiresAt: Date;
@@ -104,11 +105,14 @@ export const mcpRepository = {
   },
   findOAuthRequest: (id: string, adminId: string, now = new Date()) =>
     prisma.mcpOAuthRequest.findFirst({
-      where: { id, adminId, expiresAt: { gt: now } },
+      where: { id, adminId, usedAt: null, expiresAt: { gt: now } },
     }),
+  inspectOAuthRequest: (id: string) =>
+    prisma.mcpOAuthRequest.findUnique({ where: { id } }),
   consumeOAuthRequest: (id: string, adminId: string, now = new Date()) =>
-    prisma.mcpOAuthRequest.deleteMany({
-      where: { id, adminId, expiresAt: { gt: now } },
+    prisma.mcpOAuthRequest.updateMany({
+      where: { id, adminId, usedAt: null, expiresAt: { gt: now } },
+      data: { usedAt: now },
     }),
   createOAuthCode: (data: {
     codeHash: string;
@@ -116,17 +120,22 @@ export const mcpRepository = {
     clientId: string;
     redirectUri: string;
     codeChallenge: string;
+    codeChallengeMethod: string;
     scopes: string;
     resource: string;
+    requestId?: string;
     expiresAt: Date;
   }) => prisma.mcpOAuthAuthorizationCode.create({ data }),
   findOAuthCode: (codeHash: string, now = new Date()) =>
     prisma.mcpOAuthAuthorizationCode.findFirst({
       where: { codeHash, expiresAt: { gt: now } },
     }),
+  inspectOAuthCode: (codeHash: string) =>
+    prisma.mcpOAuthAuthorizationCode.findUnique({ where: { codeHash } }),
   consumeOAuthCode: (id: string, now = new Date()) =>
-    prisma.mcpOAuthAuthorizationCode.deleteMany({
-      where: { id, expiresAt: { gt: now } },
+    prisma.mcpOAuthAuthorizationCode.updateMany({
+      where: { id, usedAt: null, expiresAt: { gt: now } },
+      data: { usedAt: now },
     }),
   createOAuthToken: (data: {
     tokenHash: string;

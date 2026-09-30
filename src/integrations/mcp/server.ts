@@ -8,6 +8,7 @@ import { leadsMcpService } from "@/features/leads/services/leads.mcp.service";
 import { organizationsMcpService } from "@/features/organizations/services/organizations.mcp.service";
 import { peopleMcpService } from "@/features/people/services/people.mcp.service";
 import { activityMcpService } from "@/features/activity/services/activity.mcp.service";
+import { mailMcpService } from "@/features/mail/services/mail.mcp.service";
 
 import type { McpAuthentication } from "./auth";
 import { mcpRepository } from "./repository";
@@ -15,12 +16,17 @@ import { mcpRepository } from "./repository";
 import { leadSchema } from "@/features/leads";
 import { organizationSchema } from "@/features/organizations";
 import { personSchema } from "@/features/people";
+const emailSchema = z.object({
+  email: z.string().email(),
+});
+
+export { organizationSchema, leadSchema }; // Assuming you export these from index.ts
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
-type Entity = "lead" | "organization" | "person" | "research";
+type Entity = "lead" | "organization" | "person" | "research" | "email" | "email_lead";
 
 /**
  * Every MCP input schema is a complete ZodObject.
@@ -121,7 +127,7 @@ function register(
       inputSchema: inputSchema.shape,
     },
 
-    async (input) => {
+    async (input: Record<string, unknown>) => {
       if (!authentication.scopes.includes(requiredScope)) {
         return {
           isError: true,
@@ -214,7 +220,9 @@ async function audit(
   const identity =
     authentication.kind === "api-key"
       ? `authenticationType=api-key; apiKeyId=${authentication.keyId}; integration=${authentication.integrationName}`
-      : `authenticationType=oauth; oauthClientId=${authentication.clientId}`;
+      : authentication.kind === "oauth"
+        ? `authenticationType=oauth; oauthClientId=${authentication.clientId}`
+        : "authenticationType=bypass; MCP_AUTH_REQUIRED=false";
 
   await activityMcpService.audit({
     title: `MCP ${action}: ${entity} ${row.id}`,
@@ -378,6 +386,22 @@ export function createMcpServer(
       plural: "people",
       schema: personSchema,
       api: peopleMcpService,
+    },
+
+    {
+      entity: "email" as const,
+      singular: "email",
+      plural: "emails",
+      schema: emailSchema,
+      api: mailMcpService,
+    },
+
+    {
+      entity: "email_lead" as const,
+      singular: "email_lead",
+      plural: "email_leads",
+      schema: leadSchema,
+      api: mailMcpService,
     },
   ];
 

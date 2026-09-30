@@ -1,6 +1,7 @@
 import { getAdminSession } from "@/lib/auth/session";
 import {
   authorizationCodeExpiresAt,
+  authorizationRequestExpiresAt,
   getOAuthUrls,
   hashAuthorizationCode,
   isAllowedRedirectUri,
@@ -8,6 +9,7 @@ import {
   OAuthError,
   OAUTH_SCOPES,
   parseScopes,
+  logOAuthTransition,
 } from "@/integrations/mcp/oauth";
 import { allowMcpRequest } from "@/integrations/mcp/context";
 import { mcpRepository } from "@/integrations/mcp/repository";
@@ -67,6 +69,18 @@ export async function GET(request: Request) {
     callback = url.searchParams.get("redirect_uri");
     state = url.searchParams.get("state");
     const codeChallenge = url.searchParams.get("code_challenge") ?? "";
+    const codeChallengeMethod = url.searchParams.get("code_challenge_method");
+    logOAuthTransition("authorize.request_received", {
+      clientId: url.searchParams.get("client_id"),
+      redirectUri: callback,
+      scope: url.searchParams.get("scope"),
+      statePresent: state !== null,
+      codeChallengePresent: Boolean(codeChallenge),
+      codeChallengeMethod,
+      now: new Date().toISOString(),
+      requestId: null,
+      expiresAt: null,
+    });
     const urls = getOAuthUrls(request.url);
     issuer = urls.issuer;
     if (!allowMcpRequest(request, 60, "oauth-authorize"))
@@ -78,7 +92,7 @@ export async function GET(request: Request) {
       responseType !== "code" ||
       !clientId ||
       !callback ||
-      url.searchParams.get("code_challenge_method") !== "S256" ||
+      codeChallengeMethod !== "S256" ||
       !/^[A-Za-z0-9_-]{43}$/.test(codeChallenge) ||
       (state && state.length > 1024)
     )
@@ -128,15 +142,29 @@ export async function GET(request: Request) {
     }
 
     await mcpRepository.deleteExpiredOAuthData();
+    const now = new Date();
+    const expiresAt = authorizationRequestExpiresAt(now);
     const pending = await mcpRepository.createOAuthRequest({
       adminId: session.adminId,
       clientId,
       redirectUri: callback,
       ...(state !== null ? { state } : {}),
       codeChallenge,
+      codeChallengeMethod,
       scopes: scopes.join(" "),
       resource: urls.resource,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+      expiresAt,
+    });
+    logOAuthTransition("authorize.request_created", {
+      clientId,
+      redirectUri: callback,
+      scope: scopes.join(" "),
+      statePresent: state !== null,
+      codeChallengePresent: Boolean(codeChallenge),
+      codeChallengeMethod,
+      now: now.toISOString(),
+      requestId: pending.id,
+      expiresAt: expiresAt.toISOString(),
     });
     const scopeItems = scopes
       .map((scope) =>
@@ -187,16 +215,46 @@ export async function POST(request: Request) {
       requestId,
       session.adminId,
     );
-    if (!pending)
+    if (!pending) {
+      const now = new Date();
+      const inspected = await mcpRepository.inspectOAuthRequest(requestId);
+      const expired = inspected ? inspected.expiresAt.getTime() <= now.getTime() : null;
+      logOAuthTransition("authorize.request_lookup", {
+        found: Boolean(inspected),
+        requestId,
+        expiresAt: inspected?.expiresAt.toISOString() ?? null,
+        now: now.toISOString(),
+        expired,
+        alreadyUsed: inspected ? inspected.usedAt !== null : null,
+        sessionMatches: inspected ? inspected.adminId === session.adminId : null,
+      });
       return errorPage(
-        "This authorization request expired. Return to the MCP client and reconnect.",
+        inspected?.usedAt
+          ? "This authorization request has already been handled. Return to the MCP client and reconnect."
+          : inspected && inspected.adminId !== session.adminId
+            ? "This authorization request belongs to a different administrator session. Return to the MCP client and reconnect."
+            : expired
+              ? "This authorization request expired. Return to the MCP client and reconnect."
+              : "This authorization request could not be found. Return to the MCP client and reconnect.",
       );
+    }
     const consumed = await mcpRepository.consumeOAuthRequest(
       requestId,
       session.adminId,
     );
-    if (!consumed.count)
+    if (!consumed.count) {
+      const now = new Date();
+      const inspected = await mcpRepository.inspectOAuthRequest(requestId);
+      logOAuthTransition("authorize.request_consume", {
+        consumed: false,
+        requestId,
+        expiresAt: inspected?.expiresAt.toISOString() ?? null,
+        now: now.toISOString(),
+        expired: inspected ? inspected.expiresAt.getTime() <= now.getTime() : null,
+        alreadyUsed: inspected ? inspected.usedAt !== null : null,
+      });
       return errorPage("This authorization request has already been handled.");
+    }
     if (decision === "deny")
       return redirectError(
         pending.redirectUri,
@@ -217,15 +275,25 @@ export async function POST(request: Request) {
         "The registered client changed. Return to the MCP client and reconnect.",
       );
     const code = makeAuthorizationCode();
+    const codeExpiresAt = authorizationCodeExpiresAt();
     await mcpRepository.createOAuthCode({
       codeHash: hashAuthorizationCode(code),
       adminId: session.adminId,
       clientId: pending.clientId,
       redirectUri: pending.redirectUri,
       codeChallenge: pending.codeChallenge,
+      codeChallengeMethod: pending.codeChallengeMethod,
       scopes: pending.scopes,
       resource: pending.resource,
-      expiresAt: authorizationCodeExpiresAt(),
+      requestId: pending.id,
+      expiresAt: codeExpiresAt,
+    });
+    logOAuthTransition("authorize.code_created", {
+      requestId: pending.id,
+      clientId: pending.clientId,
+      redirectUri: pending.redirectUri,
+      codeCreated: true,
+      codeExpiresAt: codeExpiresAt.toISOString(),
     });
     const target = new URL(pending.redirectUri);
     target.searchParams.set("code", code);

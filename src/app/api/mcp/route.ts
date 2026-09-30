@@ -1,6 +1,6 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { allowMcpIdentity, allowMcpRequest } from "@/integrations/mcp/context";
-import { authenticateMcpRequest } from "@/integrations/mcp/auth";
+import { authenticateMcpRequest, MCP_AUTH_REQUIRED } from "@/integrations/mcp/auth";
 import { getOAuthUrls } from "@/integrations/mcp/oauth";
 import {
   addOAuthSecuritySchemes,
@@ -30,6 +30,14 @@ async function handle(request: Request) {
   > | null = null;
 
   let resourceMetadata: string | undefined;
+
+  if (!MCP_AUTH_REQUIRED) {
+    const authentication = {
+      kind: "bypass" as const,
+      scopes: ["strix:read", "strix:write"] as ("strix:read" | "strix:write")[],
+    };
+    return handleAuthenticatedRequest(request, authentication, "");
+  }
 
   const apiKey = request.headers.get("x-mcp-api-key");
   const authorization = request.headers.get("authorization");
@@ -115,10 +123,11 @@ async function handle(request: Request) {
    * 4. PER-IDENTITY RATE LIMIT
    * ---------------------------------------------------------
    */
-  const identity =
-    authentication.kind === "api-key"
-      ? `key:${authentication.keyId}`
-      : `oauth:${authentication.clientId}`;
+  const identity = authentication.kind === "api-key"
+    ? `key:${authentication.keyId}`
+    : authentication.kind === "oauth"
+      ? `oauth:${authentication.clientId}`
+      : "auth-disabled";
 
   if (!allowMcpIdentity(identity)) {
     return Response.json(
@@ -140,7 +149,15 @@ async function handle(request: Request) {
    * 5. CREATE MCP SERVER
    * ---------------------------------------------------------
    */
-  const server = createMcpServer(authentication, resourceMetadata ?? "");
+  return handleAuthenticatedRequest(request, authentication, resourceMetadata ?? "");
+}
+
+async function handleAuthenticatedRequest(
+  request: Request,
+  authentication: NonNullable<Awaited<ReturnType<typeof authenticateMcpRequest>>> | { kind: "bypass"; scopes: ("strix:read" | "strix:write")[] },
+  resourceMetadata: string,
+) {
+  const server = createMcpServer(authentication, resourceMetadata);
 
   const transport = new WebStandardStreamableHTTPServerTransport({
     enableJsonResponse: true,

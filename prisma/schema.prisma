@@ -193,7 +193,7 @@ model Person {
   // Contact
   // -------------------------
 
-  email          String?
+  email        String? @unique
   personalEmail  String?
   phone          String?
   alternatePhone String?
@@ -644,16 +644,19 @@ model McpOAuthRequest {
   state String?
 
   codeChallenge String
+  codeChallengeMethod String @default("S256")
 
   scopes   String
   resource String
 
   expiresAt DateTime
+  usedAt DateTime?
 
   createdAt DateTime @default(now())
 
   @@index([expiresAt])
   @@index([clientId])
+  @@index([usedAt])
 }
 
 /**
@@ -673,16 +676,22 @@ model McpOAuthAuthorizationCode {
   redirectUri String
 
   codeChallenge String
+  codeChallengeMethod String @default("S256")
+
+  requestId String?
 
   scopes   String
   resource String
 
   expiresAt DateTime
+  usedAt DateTime?
 
   createdAt DateTime @default(now())
 
   @@index([expiresAt])
   @@index([clientId])
+  @@index([usedAt])
+  @@index([requestId])
 }
 
 /**
