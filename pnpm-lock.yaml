@@ -68,6 +68,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      nodemailer:
+        specifier: ^10.0.13
+        version: 10.0.13
       react:
         specifier: ^19.2.7
         version: 19.2.7
@@ -114,6 +117,9 @@ importers:
       '@types/node':
         specifier: ^24.13.2
         version: 24.13.3
+      '@types/nodemailer':
+        specifier: ^8.0.2
+        version: 8.0.2
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.18
@@ -1134,6 +1140,9 @@ packages:
 
   '@types/node@24.13.3':
     resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
+
+  '@types/nodemailer@8.0.2':
+    resolution: {integrity: sha512-c7M5ox8p0nEOfbJ2E9Qcmt8/QCu/VzsiAhzBiZbvky2PhKZDHpKB3sQHBM5MEZNkCfBOaS6S9//AGPRTNB7IaA==}
 
   '@types/react-dom@19.2.4':
     resolution: {integrity: sha512-Bsc+QHgp+P/F02XDzNCY9jnZNCUuLki36KT7VKrTXXLdHf+vHMNZnW1rVu5DNW/rCK+fya3DATySbLM4yhtKUw==}
@@ -2313,6 +2322,10 @@ packages:
   node-releases@2.0.51:
     resolution: {integrity: sha512-wRNIrw4DmVLKQlbgOMdkMx27Wrpzes2hh5Jtbi2bjPd+4wJstWIqP5A+lscnqbm0xxmT5Bpg8Lec5ItEBwx6BQ==}
     engines: {node: '>=18'}
+
+  nodemailer@10.0.13:
+    resolution: {integrity: sha512-SzG86OlvcW/NNhUFC6uROMwRTL4n7MswfQqC/T8mhkmnY1YVa23zUEMYi4ijSeXSl9GLz9ZeTJDUatEDuY5FeQ==}
+    engines: {node: '>=20.0.0'}
 
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
@@ -3949,6 +3962,10 @@ snapshots:
     dependencies:
       undici-types: 7.18.2
 
+  '@types/nodemailer@8.0.2':
+    dependencies:
+      '@types/node': 24.13.3
+
   '@types/react-dom@19.2.4(@types/react@19.2.18)':
     dependencies:
       '@types/react': 19.2.18
@@ -5042,6 +5059,8 @@ snapshots:
   node-fetch-native@1.6.7: {}
 
   node-releases@2.0.51: {}
+
+  nodemailer@10.0.13: {}
 
   npm-run-path@4.0.1:
     dependencies:

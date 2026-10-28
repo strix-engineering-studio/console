@@ -16,44 +16,18 @@ import { mcpRepository } from "./repository";
 import { leadSchema } from "@/features/leads";
 import { organizationSchema } from "@/features/organizations";
 import { personSchema } from "@/features/people";
-const emailSchema = z.object({
-  email: z.string().email(),
-});
-
-export { organizationSchema, leadSchema }; // Assuming you export these from index.ts
-
-/* -------------------------------------------------------------------------- */
-/* Types                                                                      */
-/* -------------------------------------------------------------------------- */
-
-type Entity = "lead" | "organization" | "person" | "research" | "email" | "email_lead";
-
-/**
- * Every MCP input schema is a complete ZodObject.
- *
- * Feature schemas should be defined as Zod objects and reused here.
- * MCP-specific fields such as id and idempotencyKey are derived with
- * .extend() rather than creating duplicate schemas.
- */
-type McpInputSchema = z.ZodObject<any>;
-
-/* -------------------------------------------------------------------------- */
-/* Common schemas                                                             */
-/* -------------------------------------------------------------------------- */
-
-const idSchema = z.object({
-  id: z.string().min(1).max(200),
-});
-
-const searchSchema = z.object({
-  q: z.string().max(200).optional(),
-});
-
-const keySchema = z.object({
-  idempotencyKey: z.string().min(1).max(200).optional(),
-});
-
-const emptySchema = z.object({});
+import {
+  emailSchema,
+  type SendEmailInput,
+  sendEmailSchema,
+} from "@/features/mail/schemas/email.schema";
+import {
+  McpInputSchema,
+  Entity,
+  idSchema,
+  keySchema,
+  listSchema,
+} from "./schema";
 
 /* -------------------------------------------------------------------------- */
 /* Response helpers                                                           */
@@ -387,201 +361,127 @@ export function createMcpServer(
       schema: personSchema,
       api: peopleMcpService,
     },
-
-    {
-      entity: "email" as const,
-      singular: "email",
-      plural: "emails",
-      schema: emailSchema,
-      api: mailMcpService,
-    },
-
-    {
-      entity: "email_lead" as const,
-      singular: "email_lead",
-      plural: "email_leads",
-      schema: leadSchema,
-      api: mailMcpService,
-    },
   ];
 
-  /* ---------------------------------------------------------------------- */
-  /* CRUD tools                                                             */
-  /* ---------------------------------------------------------------------- */
+  register(
+    server,
+    "send_email",
+    [
+      "Send an email through the configured SMTP server.",
+      "Supports to, cc, bcc, replyTo, subject, text, html, attachments, and headers.",
+      "Use idempotencyKey when the operation may be retried.",
+    ].join(" "),
+    sendEmailSchema,
+    "strix:write",
+    authentication,
+    resourceMetadataUrl,
+    async (input) => {
+      const { idempotencyKey, ...email } = input as SendEmailInput;
+
+      return createIdempotently(
+        "send_email",
+        typeof idempotencyKey === "string" ? idempotencyKey : undefined,
+        email,
+        () => mailMcpService.send(email),
+        "email",
+        authentication,
+      );
+    },
+  );
+
+  /* -------------------------------------------------------------------------- */
+  /* List / Create / Update tools                                               */
+  /* -------------------------------------------------------------------------- */
 
   for (const { entity, singular, plural, schema, api } of definitions) {
-    const searchName = `search_${plural}`;
-    const getName = `get_${singular}`;
-    const createName = `create_${singular}`;
-    const updateName = `update_${singular}`;
-    const deleteName = `delete_${singular}`;
-
-    /* -------------------------------------------------------------------- */
-    /* Search                                                               */
-    /* -------------------------------------------------------------------- */
+    /* ---------------------------------------------------------------------- */
+    /* List                                                                    */
+    /* ---------------------------------------------------------------------- */
 
     register(
       server,
-      searchName,
-      `Search ${plural}.`,
-      searchSchema,
+      `list_${plural}`,
+      `List ${plural}. Use id to get one record, query to search, and limit to control the result size.`,
+      listSchema,
       "strix:read",
       authentication,
       resourceMetadataUrl,
+      async ({ id, query }) => {
+        if (typeof id === "string" && id.trim()) {
+          const result = await api.get(id);
 
-      async ({ q }) => {
-        return api.list(typeof q === "string" ? q : "");
-      },
-    );
+          if (!result) {
+            throw new Error(`${singular} not found`);
+          }
 
-    /* -------------------------------------------------------------------- */
-    /* Get                                                                   */
-    /* -------------------------------------------------------------------- */
-
-    register(
-      server,
-      getName,
-      `Get ${singular} by ID.`,
-      idSchema,
-      "strix:read",
-      authentication,
-      resourceMetadataUrl,
-
-      async ({ id }) => {
-        const result = await api.get(String(id));
-
-        if (!result) {
-          throw new Error(`${singular} not found`);
+          return result;
         }
 
-        return result;
+        return api.list(typeof query === "string" ? query : "");
       },
     );
 
-    /* -------------------------------------------------------------------- */
-    /* Create                                                                */
-    /* -------------------------------------------------------------------- */
+    /* ---------------------------------------------------------------------- */
+    /* Create                                                                  */
+    /* ---------------------------------------------------------------------- */
 
-    const createSchema = schema.extend({
+    const createSchema = schema.safeExtend({
       idempotencyKey: keySchema.shape.idempotencyKey,
     });
 
     register(
       server,
-      createName,
+      `create_${singular}`,
       `Create ${singular}. Supports an optional idempotencyKey for safe retries.`,
       createSchema,
       "strix:write",
       authentication,
       resourceMetadataUrl,
-
       async (input) => {
         const { idempotencyKey, ...data } = input;
 
         return createIdempotently(
-          createName,
-
+          `create_${singular}`,
           typeof idempotencyKey === "string" ? idempotencyKey : undefined,
-
           data,
-
           () => api.create(data as never),
-
           entity,
           authentication,
         );
       },
     );
 
-    /* -------------------------------------------------------------------- */
-    /* Update                                                                */
-    /* -------------------------------------------------------------------- */
+    /* ---------------------------------------------------------------------- */
+    /* Update                                                                  */
+    /* ---------------------------------------------------------------------- */
 
-    const updateSchema = schema.extend({
+    const updateSchema = schema.partial().safeExtend({
       id: idSchema.shape.id,
     });
 
     register(
       server,
-      updateName,
+      `update_${singular}`,
       `Update ${singular} by ID.`,
       updateSchema,
       "strix:write",
       authentication,
       resourceMetadataUrl,
-
       async ({ id, ...data }) => {
         const result = await api.update(String(id), data as never);
 
-        await audit(updateName, "update", entity, result, authentication);
+        await audit(
+          `update_${singular}`,
+          "update",
+          entity,
+          result,
+          authentication,
+        );
 
         return result;
       },
     );
-
-    /* -------------------------------------------------------------------- */
-    /* Delete                                                                */
-    /* -------------------------------------------------------------------- */
-
-    register(
-      server,
-      deleteName,
-      `Delete ${singular} by ID.`,
-      idSchema,
-      "strix:write",
-      authentication,
-      resourceMetadataUrl,
-
-      async ({ id }) => {
-        const result = await api.delete(String(id));
-
-        await audit(deleteName, "delete", entity, result, authentication);
-
-        return {
-          deleted: true,
-          id: String(id),
-        };
-      },
-    );
   }
-
-  /* ---------------------------------------------------------------------- */
-  /* Activity tools                                                         */
-  /* ---------------------------------------------------------------------- */
-
-  register(
-    server,
-    "list_activities",
-    "List recent activities.",
-    emptySchema,
-    "strix:read",
-    authentication,
-    resourceMetadataUrl,
-
-    async () => {
-      return activityMcpService.list();
-    },
-  );
-
-  register(
-    server,
-    "get_activity",
-    "Get an activity by ID.",
-    idSchema,
-    "strix:read",
-    authentication,
-    resourceMetadataUrl,
-
-    async ({ id }) => {
-      const result = await activityMcpService.get(String(id));
-
-      if (!result) {
-        throw new Error("Activity not found");
-      }
-
-      return result;
-    },
-  );
 
   return server;
 }

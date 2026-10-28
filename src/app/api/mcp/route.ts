@@ -1,6 +1,9 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { allowMcpIdentity, allowMcpRequest } from "@/integrations/mcp/context";
-import { authenticateMcpRequest, MCP_AUTH_REQUIRED } from "@/integrations/mcp/auth";
+import {
+  authenticateMcpRequest,
+  MCP_AUTH_REQUIRED,
+} from "@/integrations/mcp/auth";
 import { getOAuthUrls } from "@/integrations/mcp/oauth";
 import {
   addOAuthSecuritySchemes,
@@ -123,11 +126,12 @@ async function handle(request: Request) {
    * 4. PER-IDENTITY RATE LIMIT
    * ---------------------------------------------------------
    */
-  const identity = authentication.kind === "api-key"
-    ? `key:${authentication.keyId}`
-    : authentication.kind === "oauth"
-      ? `oauth:${authentication.clientId}`
-      : "auth-disabled";
+  const identity =
+    authentication.kind === "api-key"
+      ? `key:${authentication.keyId}`
+      : authentication.kind === "oauth"
+        ? `oauth:${authentication.clientId}`
+        : "auth-disabled";
 
   if (!allowMcpIdentity(identity)) {
     return Response.json(
@@ -149,12 +153,18 @@ async function handle(request: Request) {
    * 5. CREATE MCP SERVER
    * ---------------------------------------------------------
    */
-  return handleAuthenticatedRequest(request, authentication, resourceMetadata ?? "");
+  return handleAuthenticatedRequest(
+    request,
+    authentication,
+    resourceMetadata ?? "",
+  );
 }
 
 async function handleAuthenticatedRequest(
   request: Request,
-  authentication: NonNullable<Awaited<ReturnType<typeof authenticateMcpRequest>>> | { kind: "bypass"; scopes: ("strix:read" | "strix:write")[] },
+  authentication:
+    | NonNullable<Awaited<ReturnType<typeof authenticateMcpRequest>>>
+    | { kind: "bypass"; scopes: ("strix:read" | "strix:write")[] },
   resourceMetadata: string,
 ) {
   const server = createMcpServer(authentication, resourceMetadata);
@@ -214,11 +224,18 @@ async function handleAuthenticatedRequest(
       statusText: response.statusText,
       headers,
     });
-  } catch {
-    await server.close().catch(() => undefined);
+  } catch (error) {
+    console.error("[MCP] Request failed:", error);
+
+    await server.close().catch((closeError) => {
+      console.error("[MCP] Failed to close server:", closeError);
+    });
 
     return Response.json(
-      { error: "MCP request failed." },
+      {
+        error: "MCP request failed.",
+        message: error instanceof Error ? error.message : String(error),
+      },
       {
         status: 500,
         headers: {
@@ -227,6 +244,19 @@ async function handleAuthenticatedRequest(
       },
     );
   }
+  // } catch {
+  //   await server.close().catch(() => undefined);
+
+  //   return Response.json(
+  //     { error: "MCP request failed." },
+  //     {
+  //       status: 500,
+  //       headers: {
+  //         "Cache-Control": "no-store",
+  //       },
+  //     },
+  //   );
+  // }
 }
 
 export const GET = handle;
