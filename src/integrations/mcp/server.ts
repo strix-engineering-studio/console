@@ -2,7 +2,6 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
 
 import { leadsMcpService } from "@/features/leads/services/leads.mcp.service";
 import { organizationsMcpService } from "@/features/organizations/services/organizations.mcp.service";
@@ -10,14 +9,12 @@ import { peopleMcpService } from "@/features/people/services/people.mcp.service"
 import { activityMcpService } from "@/features/activity/services/activity.mcp.service";
 import { mailMcpService } from "@/features/mail/services/mail.mcp.service";
 
-import type { McpAuthentication } from "./auth";
 import { mcpRepository } from "./repository";
 
 import { leadSchema } from "@/features/leads";
 import { organizationSchema } from "@/features/organizations";
 import { personSchema } from "@/features/people";
 import {
-  emailSchema,
   type SendEmailInput,
   sendEmailSchema,
 } from "@/features/mail/schemas/email.schema";
@@ -82,9 +79,6 @@ function register(
   name: string,
   description: string,
   inputSchema: McpInputSchema,
-  requiredScope: "strix:read" | "strix:write",
-  authentication: McpAuthentication,
-  resourceMetadataUrl: string,
   handler: (input: Record<string, unknown>) => Promise<unknown>,
 ) {
   server.registerTool(
@@ -102,29 +96,6 @@ function register(
     },
 
     async (input: Record<string, unknown>) => {
-      if (!authentication.scopes.includes(requiredScope)) {
-        return {
-          isError: true,
-
-          content: [
-            {
-              type: "text" as const,
-              text: `This action requires the ${requiredScope} permission. Add that permission to the API key or OAuth grant.`,
-            },
-          ],
-
-          ...(resourceMetadataUrl
-            ? {
-                _meta: {
-                  "mcp/www_authenticate": [
-                    `Bearer resource_metadata="${resourceMetadataUrl}", error="insufficient_scope", error_description="The ${requiredScope} permission is required."`,
-                  ],
-                },
-              }
-            : {}),
-        };
-      }
-
       try {
         const result = await handler(input as Record<string, unknown>);
 
@@ -145,7 +116,6 @@ async function audit(
   action: string,
   entity: Entity,
   result: unknown,
-  authentication: McpAuthentication,
 ) {
   const row = result as {
     id?: string;
@@ -191,18 +161,11 @@ async function audit(
                 : {}),
             };
 
-  const identity =
-    authentication.kind === "api-key"
-      ? `authenticationType=api-key; apiKeyId=${authentication.keyId}; integration=${authentication.integrationName}`
-      : authentication.kind === "oauth"
-        ? `authenticationType=oauth; oauthClientId=${authentication.clientId}`
-        : "authenticationType=bypass; MCP_AUTH_REQUIRED=false";
-
   await activityMcpService.audit({
     title: `MCP ${action}: ${entity} ${row.id}`,
 
     description:
-      `${identity}; ` +
+      `authenticationType=none; ` +
       `tool=${tool}; ` +
       `action=${action}; ` +
       `entity=${entity}; ` +
@@ -223,7 +186,6 @@ async function createIdempotently(
   input: unknown,
   create: () => Promise<unknown>,
   entity: Entity,
-  authentication: McpAuthentication,
 ) {
   /**
    * No idempotency key means normal creation.
@@ -231,7 +193,7 @@ async function createIdempotently(
   if (!key) {
     const result = await create();
 
-    await audit(tool, "create", entity, result, authentication);
+    await audit(tool, "create", entity, result);
 
     return result;
   }
@@ -304,7 +266,7 @@ async function createIdempotently(
     JSON.stringify(result),
   );
 
-  await audit(tool, "create", entity, result, authentication);
+  await audit(tool, "create", entity, result);
 
   return result;
 }
@@ -313,10 +275,7 @@ async function createIdempotently(
 /* MCP server                                                                 */
 /* -------------------------------------------------------------------------- */
 
-export function createMcpServer(
-  authentication: McpAuthentication,
-  resourceMetadataUrl: string,
-) {
+export function createMcpServer() {
   const server = new McpServer({
     name: "strix-lead",
     version: "1.0.0",
@@ -372,9 +331,6 @@ export function createMcpServer(
       "Use idempotencyKey when the operation may be retried.",
     ].join(" "),
     sendEmailSchema,
-    "strix:write",
-    authentication,
-    resourceMetadataUrl,
     async (input) => {
       const { idempotencyKey, ...email } = input as SendEmailInput;
 
@@ -384,7 +340,6 @@ export function createMcpServer(
         email,
         () => mailMcpService.send(email),
         "email",
-        authentication,
       );
     },
   );
@@ -403,9 +358,6 @@ export function createMcpServer(
       `list_${plural}`,
       `List ${plural}. Use id to get one record, query to search, and limit to control the result size.`,
       listSchema,
-      "strix:read",
-      authentication,
-      resourceMetadataUrl,
       async ({ id, query }) => {
         if (typeof id === "string" && id.trim()) {
           const result = await api.get(id);
@@ -434,9 +386,6 @@ export function createMcpServer(
       `create_${singular}`,
       `Create ${singular}. Supports an optional idempotencyKey for safe retries.`,
       createSchema,
-      "strix:write",
-      authentication,
-      resourceMetadataUrl,
       async (input) => {
         const { idempotencyKey, ...data } = input;
 
@@ -446,7 +395,6 @@ export function createMcpServer(
           data,
           () => api.create(data as never),
           entity,
-          authentication,
         );
       },
     );
@@ -464,9 +412,6 @@ export function createMcpServer(
       `update_${singular}`,
       `Update ${singular} by ID.`,
       updateSchema,
-      "strix:write",
-      authentication,
-      resourceMetadataUrl,
       async ({ id, ...data }) => {
         const result = await api.update(String(id), data as never);
 
@@ -475,7 +420,6 @@ export function createMcpServer(
           "update",
           entity,
           result,
-          authentication,
         );
 
         return result;
@@ -484,49 +428,4 @@ export function createMcpServer(
   }
 
   return server;
-}
-
-/* -------------------------------------------------------------------------- */
-/* OAuth security metadata                                                    */
-/* -------------------------------------------------------------------------- */
-
-export function addOAuthSecuritySchemes(result: unknown) {
-  if (!result || typeof result !== "object") {
-    return result;
-  }
-
-  const value = result as {
-    result?: {
-      tools?: Array<Record<string, unknown>>;
-    };
-  };
-
-  if (!Array.isArray(value.result?.tools)) {
-    return result;
-  }
-
-  return {
-    ...value,
-
-    result: {
-      ...value.result,
-
-      tools: value.result.tools.map((tool) => ({
-        ...tool,
-
-        securitySchemes: [
-          {
-            type: "oauth2",
-
-            scopes:
-              String(tool.name).startsWith("create_") ||
-              String(tool.name).startsWith("update_") ||
-              String(tool.name).startsWith("delete_")
-                ? ["strix:write"]
-                : ["strix:read"],
-          },
-        ],
-      })),
-    },
-  };
 }
