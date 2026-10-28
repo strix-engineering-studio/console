@@ -180,27 +180,15 @@ model Organization {
 model Person {
   id String @id @default(uuid()) @map("_id")
 
-  // -------------------------
-  // Identity
-  // -------------------------
-
   name       String
   firstName  String?
   lastName   String?
   middleName String?
 
-  // -------------------------
-  // Contact
-  // -------------------------
-
-  email        String? @unique
-  personalEmail  String?
-  phone          String?
+  email         String? @unique
+  personalEmail String?
+  phone         String?
   alternatePhone String?
-
-  // -------------------------
-  // Professional
-  // -------------------------
 
   title      String?
   department String?
@@ -210,18 +198,10 @@ model Person {
   isInfluencer    Boolean @default(false)
   isTechnical     Boolean @default(false)
 
-  // -------------------------
-  // Social / Professional
-  // -------------------------
-
   linkedinUrl String?
   twitterUrl  String?
   githubUrl   String?
   websiteUrl  String?
-
-  // -------------------------
-  // Location
-  // -------------------------
 
   address    String?
   city       String?
@@ -230,18 +210,10 @@ model Person {
   postalCode String?
   timezone   String?
 
-  // -------------------------
-  // Professional Background
-  // -------------------------
-
   bio               String?
   previousCompanies String[]
   skills            String[]
   interests         String[]
-
-  // -------------------------
-  // Buying / Influence
-  // -------------------------
 
   buyingRole        BuyingRole?
   decisionInfluence DecisionInfluence?
@@ -250,53 +222,28 @@ model Person {
   interestsSignals   String[]
   opportunitySignals String[]
 
-  // -------------------------
-  // Contactability
-  // -------------------------
-
   emailVerified Boolean?
   phoneVerified Boolean?
 
   preferredContactMethod ContactMethod?
-
-  doNotContact Boolean @default(false)
+  doNotContact            Boolean @default(false)
 
   lastContactedAt DateTime?
   lastRespondedAt DateTime?
-
-  // -------------------------
-  // Discovery
-  // -------------------------
 
   discoverySource LeadSource?
   discoveryUrl    String?
   discoveredAt    DateTime?
 
-  // -------------------------
-  // Research
-  // -------------------------
-
   lastResearchAt     DateTime?
   researchSummary    String?
   researchConfidence Float?
 
-  // -------------------------
-  // Metadata
-  // -------------------------
-
   tags  String[]
   notes String?
 
-  // -------------------------
-  // Organization
-  // -------------------------
-
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
-
-  // -------------------------
-  // Relations
-  // -------------------------
 
   leads      Lead[]
   research   ResearchRun[]
@@ -306,7 +253,6 @@ model Person {
   updatedAt DateTime @updatedAt
 
   @@index([name])
-  @@index([email])
   @@index([phone])
   @@index([title])
   @@index([seniority])
