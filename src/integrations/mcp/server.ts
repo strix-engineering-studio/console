@@ -373,6 +373,12 @@ export function createMcpServer() {
     /* List                                                                    */
     /* ---------------------------------------------------------------------- */
 
+    const importRecordSchema = entity === "organization"
+      ? schema.safeExtend({ address: z.string().trim().min(1, "Address is required for safe organization matching.") })
+      : entity === "lead"
+        ? schema.safeExtend({ importKey: z.string().trim().min(1).max(200) })
+      : schema;
+
     register(
       server,
       `list_${plural}`,
@@ -403,23 +409,68 @@ export function createMcpServer() {
     register(
       server,
       `import_${plural}`,
-      `Bulk import up to 100 ${plural}. Each item uses the same fields as create_${singular}.`,
-      z.object({ records: z.array(schema).min(1).max(100) }),
+      entity === "organization"
+        ? `Bulk import up to 100 organizations. Each record requires address and is matched by normalized name plus address.`
+        : entity === "person"
+          ? `Bulk import up to 100 people. Each record requires email or LinkedIn URL for safe matching; phone numbers are never used as identity.`
+          : `Bulk import up to 100 leads. Each record requires importKey, a stable unique key from the source system; likely existing matches are rejected for reconciliation.`,
+      z.object({ records: z.array(importRecordSchema).min(1).max(100) }),
       async ({ records }) => {
-        const results = [];
-        for (const [index, record] of (records as Record<string, unknown>[]).entries()) {
-          try {
-            const created = await api.create(record as never);
-            await audit(`import_${plural}`, "import", entity, created);
-            results.push({ index, success: true, record: created });
-          } catch {
-            results.push({ index, success: false, error: "Record could not be imported." });
+        if (entity === "organization") {
+          const results = await organizationsMcpService.importByIdentity(
+            records as Parameters<typeof organizationsMcpService.importByIdentity>[0],
+          );
+          for (const result of results) {
+            if (!result.success) continue;
+            await audit(`import_${plural}`, "import", entity, result.record).catch(() => undefined);
           }
+          return {
+            imported: results.filter((result) => result.success).length,
+            created: results.filter((result) => result.success && result.action === "created").length,
+            updated: results.filter((result) => result.success && result.action === "updated").length,
+            failed: results.filter((result) => !result.success).length,
+            results,
+          };
         }
+
+        if (entity === "person") {
+          const results = await peopleMcpService.importByIdentity(
+            records as Parameters<typeof peopleMcpService.importByIdentity>[0],
+          );
+          for (const result of results) {
+            if (!result.success) continue;
+            await audit(`import_${plural}`, "import", entity, result.record).catch(() => undefined);
+          }
+          return {
+            imported: results.filter((result) => result.success).length,
+            created: results.filter((result) => result.success && result.action === "created").length,
+            updated: results.filter((result) => result.success && result.action === "updated").length,
+            failed: results.filter((result) => !result.success).length,
+            results,
+          };
+        }
+
+        if (entity === "lead") {
+          const results = await leadsMcpService.importByKey(
+            records as Parameters<typeof leadsMcpService.importByKey>[0],
+          );
+          for (const result of results) {
+            if (!result.success) continue;
+            await audit(`import_${plural}`, "import", entity, result.record).catch(() => undefined);
+          }
+          return {
+            imported: results.filter((result) => result.success).length,
+            created: results.filter((result) => result.success && result.action === "created").length,
+            updated: results.filter((result) => result.success && result.action === "updated").length,
+            failed: results.filter((result) => !result.success).length,
+            results,
+          };
+        }
+
         return {
-          imported: results.filter((result) => result.success).length,
-          failed: results.filter((result) => !result.success).length,
-          results,
+          imported: 0,
+          failed: Array.isArray(records) ? records.length : 0,
+          results: [],
         };
       },
     );
