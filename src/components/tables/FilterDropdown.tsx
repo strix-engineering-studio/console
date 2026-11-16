@@ -46,12 +46,14 @@ export function FilterDropdown({
 }: FilterDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="outline" size="icon" aria-label="Filters">
-          <Filter className="h-4 w-4" />
-          <span className="sr-only">Filters</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="outline" size="icon" aria-label="Filters">
+            <Filter className="h-4 w-4" />
+            <span className="sr-only">Filters</span>
+          </Button>
+        }
+      />
 
       <DropdownMenuContent align="end" className="w-72">
         <DropdownMenuLabel>

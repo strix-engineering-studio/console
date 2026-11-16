@@ -42,8 +42,10 @@ export const organizationRepository = {
       } as never,
       include: { _count: { select: { people: true, leads: true } } },
       orderBy: { [options.sortBy && sortable.includes(options.sortBy) ? options.sortBy : "updatedAt"]: options.sortOrder ?? "desc" } as never,
-      skip: ((options.page ?? 1) - 1) * (options.limit ?? 20),
-      take: options.limit ?? 20,
+      ...(options.limit ? {
+        skip: ((options.page ?? 1) - 1) * options.limit,
+        take: options.limit,
+      } : {}),
     });
   },
   findById: (id: string) => prisma.organization.findUnique({ where: { id }, include: { people: true, leads: true, research: { orderBy: { createdAt: "desc" } }, activities: { orderBy: { createdAt: "desc" }, take: 10 } } }),

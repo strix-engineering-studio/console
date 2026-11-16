@@ -32,8 +32,10 @@ export const leadRepository = {
       } as never,
       include: { organization: true, person: true },
       orderBy: { [options.sortBy && sortable.includes(options.sortBy) ? options.sortBy : "updatedAt"]: options.sortOrder ?? "desc" } as never,
-      skip: ((options.page ?? 1) - 1) * (options.limit ?? 20),
-      take: options.limit ?? 20,
+      ...(options.limit ? {
+        skip: ((options.page ?? 1) - 1) * options.limit,
+        take: options.limit,
+      } : {}),
     });
   },
   findById: (id: string) =>
