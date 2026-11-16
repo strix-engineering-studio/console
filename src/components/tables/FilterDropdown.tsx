@@ -69,12 +69,9 @@ export function FilterDropdown({
 
                   <Select
                     value={values[filter.key] ?? "ALL"}
-                    // onValueChange={(value) => {
-                    //   onChange?.(
-                    //     filter.key,
-                    //     value === true,
-                    //   );
-                    // }}
+                    onValueChange={(value) =>
+                      onChange?.(filter.key, !value || value === "ALL" ? undefined : value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue

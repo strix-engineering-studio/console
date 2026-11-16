@@ -263,7 +263,16 @@ export default function LeadTable({ data }: { data: Lead[] }) {
       searchKey="name"
       searchPlaceholder="Search leads..."
       enableSorting
-      enableFiltering={false}
+      enableFiltering
+      filterOptions={[{
+        key: "status",
+        label: "Status",
+        options: statuses.map((status) => ({ label: formatEnum(status), value: status })),
+      }, {
+        key: "priority",
+        label: "Priority",
+        options: priorities.map((priority) => ({ label: formatEnum(priority), value: priority })),
+      }]}
       enablePagination
       enableColumnVisibility
       enableRowSelection={false}

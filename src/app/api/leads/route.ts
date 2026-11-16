@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   const q = search.get("q")?.trim();
   const rawStatus = search.get("status");
   const status = leadStatus.safeParse(rawStatus).success ? rawStatus ?? undefined : undefined;
-  const leads = await leadRepository.list(q, status);
+  const leads = await leadRepository.list(q, status ? { filterBy: "status", filterValue: status } : undefined);
   return NextResponse.json({ data: leads });
 }
 

@@ -40,7 +40,17 @@ export const listSchema = z.object({
 
   query: z.string().max(200).optional(),
 
-  limit: z.number().int().min(1).max(50).default(20),
+  limit: z.number().int().min(1).max(100).default(20),
+
+  page: z.number().int().min(1).default(1),
+
+  sortBy: z.string().max(50).optional(),
+
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+
+  filterBy: z.string().max(50).optional(),
+
+  filterValue: z.string().max(200).optional(),
 });
 
 /**

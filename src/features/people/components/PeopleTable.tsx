@@ -257,7 +257,16 @@ export default function PeopleTable({ data }: { data: Person[] }) {
       searchKey="name"
       searchPlaceholder="Search people..."
       enableSorting
-      enableFiltering={false}
+      enableFiltering
+      filterOptions={[{
+        key: "seniority",
+        label: "Seniority",
+        options: ["INTERN", "ENTRY", "MID", "SENIOR", "LEAD", "MANAGER", "DIRECTOR", "VP", "C_LEVEL", "FOUNDER", "OWNER", "PARTNER", "UNKNOWN"].map((value) => ({ label: formatEnum(value), value })),
+      }, {
+        key: "buyingRole",
+        label: "Buying role",
+        options: ["DECISION_MAKER", "CHAMPION", "INFLUENCER", "USER", "GATEKEEPER", "PROCUREMENT", "UNKNOWN"].map((value) => ({ label: formatEnum(value), value })),
+      }]}
       enablePagination
       enableColumnVisibility
       enableRowSelection={false}

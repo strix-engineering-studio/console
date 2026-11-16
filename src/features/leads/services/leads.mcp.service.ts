@@ -2,7 +2,7 @@ import "server-only";
 import { leadRepository } from "../repositories/lead.repository";
 import type { LeadInput } from "../schemas";
 export const leadsMcpService = {
-  list: (q = "") => leadRepository.list(q),
+  list: (q = "", options?: Parameters<typeof leadRepository.list>[1]) => leadRepository.list(q, options),
   get: (id: string) => leadRepository.findById(id),
   create: (input: LeadInput) => leadRepository.create(input),
   update: (id: string, input: Partial<LeadInput>) =>

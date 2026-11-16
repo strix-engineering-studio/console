@@ -296,7 +296,16 @@ export default function OrganizationTable({ data }: { data: Organization[] }) {
       searchKey="name"
       searchPlaceholder="Search organizations..."
       enableSorting
-      enableFiltering={false}
+      enableFiltering
+      filterOptions={[{
+        key: "industry",
+        label: "Industry",
+        options: [...new Set(data.map((organization) => organization.industry).filter((industry): industry is string => Boolean(industry)))].sort().map((value) => ({ label: value, value })),
+      }, {
+        key: "stage",
+        label: "Company stage",
+        options: [...new Set(data.map((organization) => organization.companyStage).filter((stage): stage is NonNullable<Organization["companyStage"]> => Boolean(stage)))].sort().map((value) => ({ label: formatEnum(value), value })),
+      }]}
       enablePagination
       enableColumnVisibility
       enableRowSelection={false}

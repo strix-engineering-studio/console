@@ -3,16 +3,23 @@ import { prisma } from "@/lib/prisma";
 import type { LeadInput } from "../schemas";
 
 export const leadRepository = {
-  list: (q?: string, status?: string) =>
-    prisma.lead.findMany({
+  list: (q?: string, options: { limit?: number; page?: number; sortBy?: string; sortOrder?: "asc" | "desc"; filterBy?: string; filterValue?: string } = {}) => {
+    const sortable = ["name", "status", "priority", "source", "createdAt", "updatedAt", "overallScore"];
+    const filterable = ["status", "priority", "source", "qualificationStatus", "organizationId", "personId"];
+    const filter = options.filterBy && filterable.includes(options.filterBy) && options.filterValue
+      ? { [options.filterBy]: options.filterValue }
+      : undefined;
+    return prisma.lead.findMany({
       where: {
-        ...(q ? { name: { contains: q, mode: "insensitive" as const } } : {}),
-        ...(status ? { status: status as never } : {}),
-      },
+        ...(q ? { OR: ["name", "description"].map((field) => ({ [field]: { contains: q, mode: "insensitive" } })) } : {}),
+        ...(filter ?? {}),
+      } as never,
       include: { organization: true, person: true },
-      orderBy: { updatedAt: "desc" },
-      take: 250,
-    }),
+      orderBy: { [options.sortBy && sortable.includes(options.sortBy) ? options.sortBy : "updatedAt"]: options.sortOrder ?? "desc" } as never,
+      skip: ((options.page ?? 1) - 1) * (options.limit ?? 20),
+      take: options.limit ?? 20,
+    });
+  },
   findById: (id: string) =>
     prisma.lead.findUnique({
       where: { id },

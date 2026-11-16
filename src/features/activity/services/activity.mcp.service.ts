@@ -10,4 +10,19 @@ export const activityMcpService = {
     organizationId?: string;
     personId?: string;
   }) => activityRepository.create({ type: "NOTE", ...input }),
+  recordEmailSent: (input: {
+    subject: string;
+    recipients: string[];
+    messageId: string;
+    leadId?: string;
+    organizationId?: string;
+    personId?: string;
+  }) => activityRepository.create({
+    type: "EMAIL_SENT",
+    title: `Email sent: ${input.subject}`,
+    description: `To: ${input.recipients.join(", ")} · Message ID: ${input.messageId}`,
+    leadId: input.leadId,
+    organizationId: input.organizationId,
+    personId: input.personId,
+  }),
 };

@@ -248,7 +248,18 @@ export function DataTableToolbar<TData, TValue>({
         {/* Generic Filters */}
 
         {enableFiltering && filterOptions.length > 0 && (
-          <FilterDropdown filters={filterOptions} />
+          <FilterDropdown
+            filters={filterOptions}
+            values={Object.fromEntries(
+              table.getState().columnFilters.map(({ id, value }) => [
+                id,
+                String(value),
+              ]),
+            )}
+            onChange={(key, value) =>
+              table.getColumn(key)?.setFilterValue(value)
+            }
+          />
         )}
 
         {/* Export Excel */}

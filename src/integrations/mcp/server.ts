@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
+import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import { leadsMcpService } from "@/features/leads/services/leads.mcp.service";
@@ -330,15 +331,34 @@ export function createMcpServer() {
       "Supports to, cc, bcc, replyTo, subject, text, html, attachments, and headers.",
       "Use idempotencyKey when the operation may be retried.",
     ].join(" "),
-    sendEmailSchema,
+    sendEmailSchema.safeExtend({
+      leadId: z.string().min(1).optional(),
+      personId: z.string().min(1).optional(),
+      organizationId: z.string().min(1).optional(),
+    }),
     async (input) => {
-      const { idempotencyKey, ...email } = input as SendEmailInput;
+      const { idempotencyKey, leadId, personId, organizationId, ...email } = input as SendEmailInput & {
+        leadId?: string;
+        personId?: string;
+        organizationId?: string;
+      };
 
       return createIdempotently(
         "send_email",
         typeof idempotencyKey === "string" ? idempotencyKey : undefined,
         email,
-        () => mailMcpService.send(email),
+        async () => {
+          const result = await mailMcpService.send(email);
+          await activityMcpService.recordEmailSent({
+            subject: email.subject,
+            recipients: email.to.map((recipient) => typeof recipient === "string" ? recipient : recipient.address),
+            messageId: result.messageId,
+            leadId,
+            personId,
+            organizationId,
+          }).catch(() => undefined);
+          return result;
+        },
         "email",
       );
     },
@@ -358,7 +378,7 @@ export function createMcpServer() {
       `list_${plural}`,
       `List ${plural}. Use id to get one record, query to search, and limit to control the result size.`,
       listSchema,
-      async ({ id, query }) => {
+      async ({ id, query, limit, page, sortBy, sortOrder, filterBy, filterValue }) => {
         if (typeof id === "string" && id.trim()) {
           const result = await api.get(id);
 
@@ -369,7 +389,38 @@ export function createMcpServer() {
           return result;
         }
 
-        return api.list(typeof query === "string" ? query : "");
+        return api.list(typeof query === "string" ? query : "", {
+          limit: Number(limit),
+          page: Number(page),
+          sortBy: typeof sortBy === "string" ? sortBy : undefined,
+          sortOrder: sortOrder === "asc" ? "asc" : "desc",
+          filterBy: typeof filterBy === "string" ? filterBy : undefined,
+          filterValue: typeof filterValue === "string" ? filterValue : undefined,
+        });
+      },
+    );
+
+    register(
+      server,
+      `import_${plural}`,
+      `Bulk import up to 100 ${plural}. Each item uses the same fields as create_${singular}.`,
+      z.object({ records: z.array(schema).min(1).max(100) }),
+      async ({ records }) => {
+        const results = [];
+        for (const [index, record] of (records as Record<string, unknown>[]).entries()) {
+          try {
+            const created = await api.create(record as never);
+            await audit(`import_${plural}`, "import", entity, created);
+            results.push({ index, success: true, record: created });
+          } catch {
+            results.push({ index, success: false, error: "Record could not be imported." });
+          }
+        }
+        return {
+          imported: results.filter((result) => result.success).length,
+          failed: results.filter((result) => !result.success).length,
+          results,
+        };
       },
     );
 
